@@ -1,11 +1,13 @@
 package com.gamsion.chris.utility.EmotionModule;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.gamsion.chris.utility.EmotionModule.emotions.*;
+import com.gamsion.chris.utility.EmotionModule.emotions.STDEmotion;
 
 /**
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
@@ -21,15 +23,16 @@ public class LoadEmotions {
 		List<File> fileA = null;
 		List<STDEmotion> em = new ArrayList<STDEmotion>();
 		fileA = new ArrayList<File>(Arrays.asList(new File(dir).listFiles()));
-		fileA.remove(new File(dir+"/STDEmotion.class"));
+		fileA.remove(new File(dir, "STDEmotion.class"));
+
 		
 
 		//cycle through the files and add the emotions to the List
 		for(File f : fileA){
 			
 			String strb = f.getAbsolutePath();
-			strb = strb.substring(strb.indexOf("com\\gamsion\\chris\\utility\\EmotionModule\\emotions"));
-			strb = strb.replaceAll("\\\\", ".");
+			strb = strb.substring(strb.indexOf("com" + File.separator + "gamsion" + File.separator + "chris" + File.separator + "utility" + File.separator + "EmotionModule" + File.separator + "emotions"));
+			strb = strb.replaceAll(File.separator, ".");
 			strb = strb.replaceAll(".class", "");
 			
 			try {
