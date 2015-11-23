@@ -1,25 +1,47 @@
 package com.gamsion.chris.mastermodule;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.LogFile;
-import com.gamsion.chris.utility.module.GamsionModule;
 
-public class MasterModule implements GamsionModule{
-	GamsionLogger logger = new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\John\\");
-	ControllerModule emotions = new ControllerModule();
-	public void readLogs(){
-		List<String> EmotionModuleLog = new ArrayList<String>();
-		EmotionModuleLog.addAll(emotions.emotionModule.readLog());
-		for(int i = 0; i<EmotionModuleLog.size(); i++){
-			int level = Integer.valueOf(EmotionModuleLog.get(i).substring(0, 1));
-			EmotionModuleLog.set(i, EmotionModuleLog.get(i).substring(1));
-			logger.log(new LogFile(level,emotions.emotionModule.getName(), EmotionModuleLog.get(i)));
-		}
+public class MasterModule implements GamsionModule {
+	Map<String, GamsionModule> modules = new HashMap<String, GamsionModule>();
+	// this module's logFile
+	LogFile logFile = new LogFile(getName());
+
+	public MasterModule(){
+		modules.put("Gamsion_Logger", new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\John\\"));
+		modules.put("Controller_Module", new ControllerModule());
 	}
 	
+	/**
+	 * Reads logs of all module's including it's own.
+	 * 
+	 */
+	public void readAllLogs() {
+		checkLogs();
+		
+		this.getGamsionLogger().log(logFile);;
+		
+	}
+
+	public void checkLogs() {
+		for(GamsionModule gm : modules.values()){
+			logFile.addAll(gm.readLog());
+			gm.resetLog();
+		}
+	}
+	public ControllerModule getControllerModule(){
+		return (ControllerModule)modules.get("Controller_Module");
+	}
+	public GamsionLogger getGamsionLogger(){
+		return (GamsionLogger)modules.get("Gamsion_Logger");
+	}
+
 	@Override
 	public String getName() {
 		return "Master Module";
@@ -37,8 +59,7 @@ public class MasterModule implements GamsionModule{
 
 	@Override
 	public void shutDown() {
-		
-		
+
 	}
 
 	@Override
@@ -48,13 +69,26 @@ public class MasterModule implements GamsionModule{
 
 	@Override
 	public boolean hasLog() {
-		return false;
+		return !logFile.isEmpty();
 	}
 
 	@Override
-	public List<String> readLog() {
-		// TODO Auto-generated method stub
-		return null;
+	public LogFile readLog() {
+		return logFile;
+	}
+
+	@Override
+	public void resetLog() {
+		logFile.clear();
+		
+	}
+	public static void main(String[] args){
+		System.out.println(new File(".").getAbsolutePath());
+		MasterModule mm = new MasterModule();
+		
+		System.out.println(mm.getControllerModule().emotionModule.getEmotionList());
+			
+		
 	}
 
 }

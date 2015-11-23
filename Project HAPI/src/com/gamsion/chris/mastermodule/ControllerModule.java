@@ -1,20 +1,17 @@
 package com.gamsion.chris.mastermodule;
 
-import java.util.List;
+import com.gamsion.chris.EmotionModule.EmotionModule;
+import com.gamsion.chris.utility.GamsionModule;
+import com.gamsion.chris.utility.log.LogFile;
 
-import com.gamsion.chris.utility.EmotionModule.EmotionModule;
-import com.gamsion.chris.utility.module.GamsionModule;
+public class ControllerModule implements GamsionModule {
+	EmotionModule emotionModule = new EmotionModule(
+			"C:\\Users\\John\\Desktop\\save\\example2.txt");
+	LogFile logFile = new LogFile(getName());
+	public static void main(String[] args) {
 
-public class ControllerModule implements GamsionModule{
-	EmotionModule emotionModule = new EmotionModule("C:\\Users\\John\\Desktop\\save\\example2.txt");
-	
-	public static void main(String[] args){
-		
 	}
-	
-	
-	
-	
+
 	@Override
 	public String getName() {
 		return null;
@@ -32,7 +29,7 @@ public class ControllerModule implements GamsionModule{
 
 	@Override
 	public void shutDown() {
-		
+
 	}
 
 	@Override
@@ -40,20 +37,24 @@ public class ControllerModule implements GamsionModule{
 		return null;
 	}
 
-
-
-
 	@Override
 	public boolean hasLog() {
-		return false;
+		return !logFile.isEmpty() || this.emotionModule.hasLog();
 	}
 
-
-
+	@Override
+	public LogFile readLog() {
+		LogFile joinedLog = new LogFile(getName());
+		joinedLog.addAll(logFile);
+		joinedLog.addAll(emotionModule.readLog());
+		
+		return joinedLog;
+	}
 
 	@Override
-	public List<String> readLog() {
-		return null;
+	public void resetLog() {
+		logFile.clear();
+		
 	}
 
 }
