@@ -29,6 +29,7 @@ public class GamsionLogger implements GamsionModule {
 	private int pickupLevel;
 	private String save_location;
 	private StringBuilder fullLog = new StringBuilder();
+	private static LogFile globalLog = new LogFile();
 
 	public GamsionLogger(int printLevel, String save_location) {
 		this.save_location = save_location;
@@ -46,6 +47,13 @@ public class GamsionLogger implements GamsionModule {
 	}
 
 	public void log(LogFile logFile) {
+		if (GamsionLogger.hasGlobalLog()) {
+			LogFile global = GamsionLogger.getGlobalLog();
+			for (Log l : global) {
+				fullLog.append(l.getLog(true));
+			}
+			GamsionLogger.resetGlobalLog();
+		}
 		if (logFile.getModule() == null || !logFile.getOverrideLogName()) {
 			for (Log log : logFile) {
 				String str = log.getLog(true);
@@ -145,17 +153,38 @@ public class GamsionLogger implements GamsionModule {
 
 	@Override
 	public boolean hasLog() {
-		return false;
+		return !globalLog.isEmpty();
 	}
 
 	@Override
 	public LogFile readLog() {
-		return null;
+		return globalLog;
 	}
 
 	@Override
 	public void resetLog() {
-		
+		globalLog.clear();
+	}
+
+	public static void globalLogFileAdd(LogFile lf) {
+		globalLog.addAll(lf);
+	}
+
+	public static void globalLogFileAdd(Log l) {
+		globalLog.add(l);
+	}
+
+	public static LogFile getGlobalLog() {
+		return globalLog;
+	}
+
+	public static void resetGlobalLog() {
+
+		globalLog.clear();
+	}
+
+	public static boolean hasGlobalLog() {
+		return !globalLog.isEmpty();
 	}
 
 }

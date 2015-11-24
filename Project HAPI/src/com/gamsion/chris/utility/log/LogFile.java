@@ -13,14 +13,16 @@ public class LogFile extends ArrayList<Log> {
 			"yy.MM.dd.HH.mm");
 	private String module = null;
 	private boolean overrideName = false;
-	public LogFile(){
+
+	public LogFile() {
 		super();
 	}
-	
-	public LogFile(String module){
+
+	public LogFile(String module) {
 		super();
 		this.module = module;
 	}
+
 	public LogFile(String module, Log[] logs) {
 		super();
 		this.module = module;
@@ -28,6 +30,7 @@ public class LogFile extends ArrayList<Log> {
 			this.add(l);
 
 	}
+
 	public LogFile(String module, List<Log> logs) {
 		super();
 		this.module = module;
@@ -35,11 +38,13 @@ public class LogFile extends ArrayList<Log> {
 			this.add(l);
 
 	}
+
 	public LogFile(Log[] logs) {
 		super();
 		for (Log l : logs)
 			this.add(l);
 	}
+
 	public LogFile(List<Log> logs) {
 		super();
 		for (Log l : logs)
@@ -48,16 +53,16 @@ public class LogFile extends ArrayList<Log> {
 
 	public String read() {
 		StringBuilder logData = new StringBuilder();
-		for(Log l : this){
+		for (Log l : this) {
 			logData.append(l.getLog(true) + System.lineSeparator());
 		}
 		return logData.toString();
 	}
-	
 
 	public String getModule() {
 		return module;
 	}
+
 	public void setModule(String module) {
 		this.module = module;
 	}
@@ -65,13 +70,16 @@ public class LogFile extends ArrayList<Log> {
 	public static DateFormat getLogDateFormat() {
 		return logDateFormat;
 	}
+
 	public static DateFormat getLogFileDateFormat() {
 		return logFileDateFormat;
 	}
-	public void overrideLogName(boolean override){
+
+	public void overrideLogName(boolean override) {
 		this.overrideName = override;
 	}
-	public boolean getOverrideLogName(){
+
+	public boolean getOverrideLogName() {
 		return overrideName;
 	}
 

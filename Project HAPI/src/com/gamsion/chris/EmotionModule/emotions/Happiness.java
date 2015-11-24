@@ -1,7 +1,7 @@
 package com.gamsion.chris.EmotionModule.emotions;
 
-public class Ecstacy extends STDEmotion{
-	public static final String PENTID = "ecsta";
+public class Happiness extends STDEmotion{
+	private static final String PENTID = "happy";
 	@Override
 	public String getPentID() {
 		return PENTID;
@@ -9,7 +9,7 @@ public class Ecstacy extends STDEmotion{
 
 	@Override
 	public String getName() {
-		return "Ecstacy";
+		return "Happiness";
 	}
 		
 	

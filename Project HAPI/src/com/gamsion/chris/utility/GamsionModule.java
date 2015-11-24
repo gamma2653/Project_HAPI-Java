@@ -55,7 +55,7 @@ public interface GamsionModule {
 	public String getVersion();
 
 	/**
-	 * Every module must have a method that tells whether it's List buffer is
+	 * Every module must have a method that tells whether it's LogFile buffer is
 	 * full.
 	 * 
 	 * @return A boolean value, true if there are any items in the List.
@@ -64,30 +64,16 @@ public interface GamsionModule {
 
 	/**
 	 * <p>
-	 * Every module must have a List of Strings. The List is to be the Log which
-	 * will be read by the Logger. When read by the Logger, it should be deleted
-	 * immediately after read.
-	 * </p>
-	 * <p>
-	 * Each String should contain an int representing the Level of the log.
-	 * </p>
-	 * <p>
-	 * Example:
-	 * </p>
-	 * <p>
-	 * log(GamsionLogger.FATAL +
-	 * "Your butt has just exploded!");
-	 * </p>
-	 * <p>
-	 * OR
-	 * </p>
-	 * <p>
-	 * log("4Your butt has just blown up dude. Get a doctor PLEASE.");
-	 * (GamsionLogger.FATAL is equal to 4 anyway. This shouldn't change.)
+	 * Every module should have a LogFile. The LogFile is to be the Log which
+	 * will be read by the Logger. When read by the Logger, it may be deleted
+	 * immediately after read. (Only a suggestion, not enforced by API).
 	 * </p>
 	 * 
-	 * @return - Should be a List (Preferably an ArrayList) of String.
+	 * @return - Should be a LogFile.
 	 */
 	public LogFile readLog();
+	/**
+	 * You should reset the logFile, preferably by calling the .clear() method of the object.
+	 */
 	public void resetLog();
 }

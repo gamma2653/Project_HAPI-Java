@@ -1,4 +1,4 @@
-package com.gamsion.chris.mastermodule;
+package com.gamsion.chris.mastermodules;
 
 import com.gamsion.chris.EmotionModule.EmotionModule;
 import com.gamsion.chris.utility.GamsionModule;
@@ -8,9 +8,6 @@ public class ControllerModule implements GamsionModule {
 	EmotionModule emotionModule = new EmotionModule(
 			"C:\\Users\\John\\Desktop\\save\\example2.txt");
 	LogFile logFile = new LogFile(getName());
-	public static void main(String[] args) {
-
-	}
 
 	@Override
 	public String getName() {
@@ -47,14 +44,14 @@ public class ControllerModule implements GamsionModule {
 		LogFile joinedLog = new LogFile(getName());
 		joinedLog.addAll(logFile);
 		joinedLog.addAll(emotionModule.readLog());
-		
+
 		return joinedLog;
 	}
 
 	@Override
 	public void resetLog() {
 		logFile.clear();
-		
+
 	}
 
 }

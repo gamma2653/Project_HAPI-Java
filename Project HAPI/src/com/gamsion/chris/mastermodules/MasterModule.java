@@ -1,6 +1,5 @@
-package com.gamsion.chris.mastermodule;
+package com.gamsion.chris.mastermodules;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,33 +12,37 @@ public class MasterModule implements GamsionModule {
 	// this module's logFile
 	LogFile logFile = new LogFile(getName());
 
-	public MasterModule(){
-		modules.put("Gamsion_Logger", new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\John\\"));
+	public MasterModule() {
+		modules.put("Gamsion_Logger", new GamsionLogger(GamsionLogger.DEBUG,
+				"C:\\Users\\John\\"));
 		modules.put("Controller_Module", new ControllerModule());
 	}
-	
+
 	/**
 	 * Reads logs of all module's including it's own.
 	 * 
 	 */
 	public void readAllLogs() {
 		checkLogs();
-		
-		this.getGamsionLogger().log(logFile);;
-		
+
+		this.getGamsionLogger().log(logFile);
+		;
+
 	}
 
 	public void checkLogs() {
-		for(GamsionModule gm : modules.values()){
+		for (GamsionModule gm : modules.values()) {
 			logFile.addAll(gm.readLog());
 			gm.resetLog();
 		}
 	}
-	public ControllerModule getControllerModule(){
-		return (ControllerModule)modules.get("Controller_Module");
+
+	public ControllerModule getControllerModule() {
+		return (ControllerModule) modules.get("Controller_Module");
 	}
-	public GamsionLogger getGamsionLogger(){
-		return (GamsionLogger)modules.get("Gamsion_Logger");
+
+	public GamsionLogger getGamsionLogger() {
+		return (GamsionLogger) modules.get("Gamsion_Logger");
 	}
 
 	@Override
@@ -80,15 +83,14 @@ public class MasterModule implements GamsionModule {
 	@Override
 	public void resetLog() {
 		logFile.clear();
-		
+
 	}
-	public static void main(String[] args){
-		System.out.println(new File(".").getAbsolutePath());
+
+	public static void main(String[] args) {
 		MasterModule mm = new MasterModule();
-		
-		System.out.println(mm.getControllerModule().emotionModule.getEmotionList());
-			
-		
+
+		mm.readAllLogs();
+
 	}
 
 }

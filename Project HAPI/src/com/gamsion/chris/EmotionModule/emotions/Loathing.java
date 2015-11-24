@@ -1,7 +1,7 @@
 package com.gamsion.chris.EmotionModule.emotions;
 
 public class Loathing extends STDEmotion{
-	public static final String PENTID = "loath";
+	private static final String PENTID = "loath";
 	@Override
 	public String getPentID() {
 		return PENTID;
