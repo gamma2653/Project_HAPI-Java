@@ -1,4 +1,4 @@
-package com.gamsion.chris.utility.exceptions.EmotionModule;
+package com.gamsion.chris.utility.exceptions;
 
 /**
  * Thrown when the save did not exist before it was verified, however once

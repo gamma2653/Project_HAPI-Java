@@ -19,10 +19,10 @@ import java.util.regex.Matcher;
 
 import com.gamsion.chris.EmotionModule.emotions.STDEmotion;
 import com.gamsion.chris.utility.GamsionModule;
-import com.gamsion.chris.utility.exceptions.EmotionModule.EmotionModuleFileException;
-import com.gamsion.chris.utility.exceptions.EmotionModule.EmotionNotFoundInSaveException;
-import com.gamsion.chris.utility.exceptions.EmotionModule.EmotionValueOutOfBoundsException;
-import com.gamsion.chris.utility.exceptions.EmotionModule.SuccessfulSaveCreationException;
+import com.gamsion.chris.utility.exceptions.EmotionModuleFileException;
+import com.gamsion.chris.utility.exceptions.EmotionNotFoundInSaveException;
+import com.gamsion.chris.utility.exceptions.EmotionValueOutOfBoundsException;
+import com.gamsion.chris.utility.exceptions.SuccessfulSaveCreationException;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
@@ -36,22 +36,27 @@ import com.gamsion.chris.utility.log.LogFile;
  * 
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
  */
-public class EmotionModule implements GamsionModule {
-	private LogFile logFile = new LogFile(getName());
+public class EmotionModule implements GamsionModule, Cloneable {
+	private LogFile logFile = new LogFile(getName(), null);
 	// Global Random generator object.
 	public final Random r = new Random();
 	// Here are all the emotions to be used
 	private Map<String, STDEmotion> emotions = null;
-
+	// The save file
 	private File savefile;
+	// String of the save file's path
 	private String save_location;
 
+	@Override
 	public boolean hasLog() {
 		return !logFile.isEmpty();
 	}
 
+	@Override
 	public LogFile readLog() {
-		return logFile;
+		LogFile lf = new LogFile(getName(), null);
+		lf.addAll(this.logFile);
+		return lf;
 	}
 
 	/**
@@ -59,7 +64,7 @@ public class EmotionModule implements GamsionModule {
 	 * 
 	 * @param dir
 	 *            - the file path to the folder with the emotions
-	 * @return
+	 * @return - a list of the found emotions within the directory
 	 */
 	public static List<STDEmotion> loadEmotions(String dir) {
 		List<File> fileA = null;
@@ -69,14 +74,14 @@ public class EmotionModule implements GamsionModule {
 
 		// cycle through the files and add the emotions to the List
 		for (File f : fileA) {
-
-			String strb = f.getAbsolutePath();
-			strb = strb.substring(strb.indexOf("com" + File.separator
+			String stbr = f.getAbsolutePath();
+			String strb;
+			stbr = stbr.substring(stbr.indexOf("com" + File.separator
 					+ "gamsion" + File.separator + "chris" + File.separator
 					+ "EmotionModule" + File.separator + "emotions"));
-			strb = strb.replaceAll(Matcher.quoteReplacement(File.separator),
+			stbr = stbr.replaceAll(Matcher.quoteReplacement(File.separator),
 					".");
-			strb = strb.replaceAll(".class", "");
+			strb = stbr.replaceAll(".class", "").toString();
 
 			try {
 				em.add((STDEmotion) Class.forName(strb).newInstance());
@@ -213,7 +218,6 @@ public class EmotionModule implements GamsionModule {
 						if (emotion.getPentID().equals(subinfo)) {
 							emotion.setValue(Integer.parseInt(info));
 							emotions.put(emotion.getPentID(), emotion);
-
 							found = true;
 						}
 
@@ -264,6 +268,7 @@ public class EmotionModule implements GamsionModule {
 		try {
 			verifySave();
 			loadSave();
+			System.out.println("save loaded");
 
 		} catch (EmotionModuleFileException e) {
 			e.printStackTrace();
@@ -286,7 +291,8 @@ public class EmotionModule implements GamsionModule {
 	public void shutDown() {
 		save();
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Emotions were shutdown.", GamsionLogger.DEBUG));
+				getName(), getName() + " has been shutdown.",
+				GamsionLogger.DEBUG));
 	}
 
 	/**
@@ -308,7 +314,7 @@ public class EmotionModule implements GamsionModule {
 	public static void writeEmotion(File f, STDEmotion em, int value,
 			boolean overwrite) {
 		GamsionLogger.globalLogFileAdd(new Log(LogFile.getLogDateFormat()
-				.format(new Date()), null, em.getPentID()
+				.format(new Date()), "Static Emotion Module", em.getPentID()
 				+ " is being overwritten with the value " + value
 				+ "to the file " + f.getAbsolutePath()
 				+ " (overwrite is set to " + overwrite + ")",
@@ -371,7 +377,7 @@ public class EmotionModule implements GamsionModule {
 
 		}
 		GamsionLogger.globalLogFileAdd(new Log(LogFile.getLogDateFormat()
-				.format(new Date()), null, em.getPentID()
+				.format(new Date()), "Static Emotion Module", em.getPentID()
 				+ " was successfully overwritten with the value " + value
 				+ "to the file " + f.getAbsolutePath()
 				+ " (overwrite was set to " + overwrite + ")",
@@ -488,6 +494,10 @@ public class EmotionModule implements GamsionModule {
 		}
 	}
 
+	public void setEmotionList(Map<String, STDEmotion> eml) {
+		this.emotions = eml;
+	}
+
 	@Override
 	// So the name's Module. Emotion Module.
 	public String getName() {
@@ -544,6 +554,18 @@ public class EmotionModule implements GamsionModule {
 		logFile.clear();
 
 	}
+
+	@Override
+	public EmotionModule clone() {
+		EmotionModule em = new EmotionModule(this.save_location);
+		HashMap<String, STDEmotion> tempEmotionList = new HashMap<String, STDEmotion>();
+		tempEmotionList.putAll(emotions);
+		em.emotions = tempEmotionList;
+		em.logFile = this.readLog();
+
+		return em;
+	}
+
 }
 
 // I would like to thank all of my nonexistant fans out there! YOU GUYS ROCK!

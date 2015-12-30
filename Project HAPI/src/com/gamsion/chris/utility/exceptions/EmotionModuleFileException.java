@@ -1,4 +1,4 @@
-package com.gamsion.chris.utility.exceptions.EmotionModule;
+package com.gamsion.chris.utility.exceptions;
 
 /**
  * Thrown when Emotion Module's save is unreachable.

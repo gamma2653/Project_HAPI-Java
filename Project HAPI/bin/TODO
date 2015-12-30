@@ -1,0 +1,49 @@
+TODO:
+
+Project HAPI:
+
+Complete Logger
+Progress:
+Fully Functional
+
+Emotion Module
+Elaboration:
+Controls all of the emotional stimuli of the object.
+Primarily used by Controller Module, however possible usage elsewhere.
+Progress:
+Semi-Functional- Bugfixing and needs some more features.
+
+Personality Module
+Elaboration:
+Controls the reaction and communication between the Emotions and the stimuli.
+Imagine it as a filter that may modify the outcome.
+Or maybe imagine it like the different tips that could be used to decorate cakes.
+Progress:
+None/Planning
+
+Relationship Module
+Elaboration:
+Creates a relationship between different instances of ControllerModules.
+Ways of it working are still being decided.
+Progress:
+None
+
+Controller Module
+Elaboration:
+Module that contains all the modular qualities of a person (the module is the person).
+Progress:
+Bare bones. Waiting for more modules.
+
+Master Module
+Elaboration:
+Module that contains controller modules. Forms a community.
+Progress:
+Loads Controller Module, bare bones. Waiting for Controller Module to be complete.
+
+Thought Process Module*
+Elaboration:
+Have a module that defines train of thought. What does a person think of cars, etc.
+Progress:
+NONE
+
+* May or may not create. Will be added last and only if feasible.

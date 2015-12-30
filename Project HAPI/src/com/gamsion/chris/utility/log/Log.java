@@ -66,7 +66,7 @@ public class Log {
 
 	@Override
 	public String toString() {
-		return time + message;
+		return getLog(true);
 	}
 
 	/**

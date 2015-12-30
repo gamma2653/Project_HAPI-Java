@@ -19,25 +19,65 @@ import com.gamsion.chris.utility.GamsionModule;
  *
  */
 public class GamsionLogger implements GamsionModule {
+	/**
+	 * Raw information. Any small action.
+	 */
 	public static final int DEBUG = 0;
+	/**
+	 * Used for general console information. More important than DEBUG.
+	 */
 	public static final int INFO = 1;
+	/**
+	 * Light error, program still able to run.
+	 */
 	public static final int ERROR = 2;
+	/**
+	 * Severe error, program may close suddenly/ freeze.
+	 */
 	public static final int SEVERE = 3;
+	/**
+	 * Fatal Error. Program can not continue.
+	 */
 	public static final int FATAL = 4;
+	/**
+	 * Used to find the name of each degree. (0=DEBUG, 1=INFO, 2=ERROR,
+	 * 3=SEVERE, 4=FATAL)
+	 */
 	public static final String[] levelNames = { "DEBUG", "INFO", "ERROR",
 			"SEVERE", "FATAL" };
 	private int pickupLevel;
 	private String save_location;
 	private StringBuilder fullLog = new StringBuilder();
-	private static LogFile globalLog = new LogFile();
+	private static LogFile globalLog = new LogFile(null, null);
 
+	/**
+	 * @param printLevel
+	 *            - detection degree of logs.
+	 *            <p>
+	 *            <b>Ex)</b> new GamsionLogger(GamsionLogger.<b>ERROR</b>,
+	 *            save_location) would pick up logs with the degrees
+	 *            <b>ERROR</b>, <b>SEVERE</b>, and <b>FATAL</b>.
+	 *            </p>
+	 * @param save_location
+	 *            - Save location of the log files.
+	 */
 	public GamsionLogger(int printLevel, String save_location) {
 		this.save_location = save_location;
 		pickupLevel = printLevel;
 
 	}
 
-	public boolean changePickupDegree(int printLevel) {
+	/**
+	 * @param printLevel
+	 *            - detection degree of logs.
+	 *            <p>
+	 *            <b>Ex)</b> new GamsionLogger(GamsionLogger.<b>ERROR</b>,
+	 *            save_location) would pick up logs with the degrees
+	 *            <b>ERROR</b>, <b>SEVERE</b>, and <b>FATAL</b>.
+	 *            </p>
+	 * @return - Whether the pickup degree was changed or not.
+	 */
+	public boolean setPickupDegree(int printLevel) {
 		if (pickupLevel == printLevel) {
 			return false;
 		} else {
@@ -46,21 +86,26 @@ public class GamsionLogger implements GamsionModule {
 		}
 	}
 
-	public void log(LogFile logFile) {
-		if (GamsionLogger.hasGlobalLog()) {
+	/**
+	 * @param logFile
+	 *            - Cycles throught the log
+	 */
+	public void log(LogFile logFile, boolean checkGlobal) {
+		if (GamsionLogger.hasGlobalLog() && checkGlobal) {
 			LogFile global = GamsionLogger.getGlobalLog();
 			for (Log l : global) {
-				fullLog.append(l.getLog(true));
+				fullLog.append(l.getLog(true) + System.lineSeparator());
+				if (l.getDegree() >= pickupLevel) {
+					System.out.println(l);
+				}
 			}
 			GamsionLogger.resetGlobalLog();
 		}
 		if (logFile.getModule() == null || !logFile.getOverrideLogName()) {
 			for (Log log : logFile) {
-				String str = log.getLog(true);
-
-				fullLog.append(str + System.lineSeparator());
+				fullLog.append(log.getLog(true) + System.lineSeparator());
 				if (log.getDegree() >= pickupLevel) {
-					System.out.println(str);
+					System.out.println(log.getLog(true));
 				}
 			}
 		} else {
@@ -88,8 +133,7 @@ public class GamsionLogger implements GamsionModule {
 					return false;
 
 			}
-			FileWriter fw = new FileWriter(f);
-			BufferedWriter bw = new BufferedWriter(fw);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			bw.write(fullLog.toString());
 			bw.close();
 		} catch (IOException e) {
@@ -112,7 +156,7 @@ public class GamsionLogger implements GamsionModule {
 		logsForFile.add(new Log(null, "Test2", "This is too.",
 				GamsionLogger.INFO));
 		LogFile log = new LogFile("Tester", logsForFile);
-		logger.log(log);
+		logger.log(log, true);
 		long end = System.currentTimeMillis();
 		System.out.println(end - start);
 	}
@@ -144,6 +188,8 @@ public class GamsionLogger implements GamsionModule {
 	@Override
 	public void shutDown() {
 		saveLog();
+		globalLog.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+				getName(), getName() + " has been shutdown.", GamsionLogger.DEBUG));
 	}
 
 	@Override

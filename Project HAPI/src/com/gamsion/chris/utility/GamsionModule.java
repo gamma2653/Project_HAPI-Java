@@ -9,7 +9,7 @@ import com.gamsion.chris.utility.log.LogFile;
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
  *
  */
-public interface GamsionModule {
+public interface GamsionModule{
 	/**
 	 * The display name.
 	 * 

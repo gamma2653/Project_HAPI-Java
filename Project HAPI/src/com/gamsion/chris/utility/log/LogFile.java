@@ -5,6 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * LogFile is a class that you may instantiate to keep Log classes. It extends
+ * ArrayList&#60;Log&#62; allowing you to have a List with extra methods you
+ * masy use better suited for Logs.
+ * 
+ * @author gamma2626 a.k.a. Christopher De Jesus
+ *
+ */
 public class LogFile extends ArrayList<Log> {
 	private static final long serialVersionUID = 1L;
 	private static final DateFormat logDateFormat = new SimpleDateFormat(
@@ -14,43 +22,27 @@ public class LogFile extends ArrayList<Log> {
 	private String module = null;
 	private boolean overrideName = false;
 
-	public LogFile() {
-		super();
-	}
-
-	public LogFile(String module) {
-		super();
-		this.module = module;
-	}
-
-	public LogFile(String module, Log[] logs) {
-		super();
-		this.module = module;
-		for (Log l : logs)
-			this.add(l);
-
-	}
-
+	/**
+	 * Standard Construction.
+	 * 
+	 * @param module
+	 *            - name of a module this logFile is in. (Usually obtained via
+	 *            this.getName() for GamsionModules). May be null if logs
+	 *            contain their own module names.
+	 * @param logs - you may create a logFile with logs already in it. May be null.
+	 */
 	public LogFile(String module, List<Log> logs) {
 		super();
-		this.module = module;
-		for (Log l : logs)
-			this.add(l);
+		if (module != null)
+			this.module = module;
+		if (logs != null)
+			this.addAll(logs);
 
 	}
 
-	public LogFile(Log[] logs) {
-		super();
-		for (Log l : logs)
-			this.add(l);
-	}
-
-	public LogFile(List<Log> logs) {
-		super();
-		for (Log l : logs)
-			this.add(l);
-	}
-
+	/**
+	 * @return - A String representation of all the logs within this file.
+	 */
 	public String read() {
 		StringBuilder logData = new StringBuilder();
 		for (Log l : this) {

@@ -1,4 +1,4 @@
-package com.gamsion.chris.utility.exceptions.EmotionModule;
+package com.gamsion.chris.utility.exceptions;
 
 /**
  * Thrown when the value is out of bounds. (Often within the save file).

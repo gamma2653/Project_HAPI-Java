@@ -1,4 +1,4 @@
-package com.gamsion.chris.utility.exceptions.EmotionModule;
+package com.gamsion.chris.utility.exceptions;
 
 /**
  * Thrown when no data is found within the save.
