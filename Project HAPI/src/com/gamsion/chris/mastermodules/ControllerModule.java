@@ -1,11 +1,7 @@
 package com.gamsion.chris.mastermodules;
 
-import java.util.Date;
-
 import com.gamsion.chris.EmotionModule.EmotionModule;
 import com.gamsion.chris.utility.GamsionModule;
-import com.gamsion.chris.utility.log.GamsionLogger;
-import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
 import com.gamsion.chris.utility.log.Utilities;
 
