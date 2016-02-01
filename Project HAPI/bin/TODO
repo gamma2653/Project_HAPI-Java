@@ -19,7 +19,7 @@ Controls the reaction and communication between the Emotions and the stimuli.
 Imagine it as a filter that may modify the outcome.
 Or maybe imagine it like the different tips that could be used to decorate cakes.
 Progress:
-None/Planning
+Started on traits.
 
 Relationship Module
 Elaboration:
@@ -32,7 +32,7 @@ Controller Module
 Elaboration:
 Module that contains all the modular qualities of a person (the module is the person).
 Progress:
-Bare bones. Waiting for more modules.
+Bare bones. Waiting for more modules. Loads all modules.
 
 Master Module
 Elaboration:
