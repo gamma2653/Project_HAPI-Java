@@ -26,6 +26,7 @@ import com.gamsion.chris.utility.exceptions.SuccessfulSaveCreationException;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
+import com.gamsion.chris.utility.log.Utilities;
 
 ;
 
@@ -290,9 +291,7 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	@Override
 	public void shutDown() {
 		save();
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), getName() + " has been shutdown.",
-				GamsionLogger.DEBUG));
+		logFile.add(Utilities.getDefaultLogShutdown(getName()));
 	}
 
 	/**

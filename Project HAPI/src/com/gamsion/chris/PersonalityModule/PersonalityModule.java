@@ -1,10 +1,15 @@
 package com.gamsion.chris.PersonalityModule;
 
+import java.util.Date;
+
 import com.gamsion.chris.utility.GamsionModule;
+import com.gamsion.chris.utility.log.GamsionLogger;
+import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
+import com.gamsion.chris.utility.log.Utilities;
 
 public class PersonalityModule implements GamsionModule{
-
+	private LogFile logFile = new LogFile(getName(), null);
 	@Override
 	public String getName() {
 		return "Personality Module";
@@ -17,37 +22,35 @@ public class PersonalityModule implements GamsionModule{
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void shutDown() {
-		// TODO Auto-generated method stub
+		
+		logFile.add(Utilities.getDefaultLogShutdown(getName()));
 		
 	}
 
 	@Override
 	public String getVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return "0.1 DEV ALPHA";
 	}
-
 	@Override
 	public boolean hasLog() {
-		// TODO Auto-generated method stub
-		return false;
+		return !logFile.isEmpty();
 	}
 
 	@Override
 	public LogFile readLog() {
-		// TODO Auto-generated method stub
-		return null;
+		LogFile lf = new LogFile(getName(), null);
+		lf.addAll(this.logFile);
+		return lf;
 	}
 
 	@Override
 	public void resetLog() {
-		// TODO Auto-generated method stub
+		logFile.clear();
 		
 	}
 

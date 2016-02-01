@@ -7,6 +7,7 @@ import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
+import com.gamsion.chris.utility.log.Utilities;
 
 /**
  * This class is used to create objects that contain all of the modules
@@ -38,9 +39,7 @@ public class ControllerModule implements GamsionModule {
 	@Override
 	public void shutDown() {
 		emotionModule.shutDown();
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), getName() + " has been shutdown.",
-				GamsionLogger.DEBUG));
+		logFile.add(Utilities.getDefaultLogShutdown(getName()));
 	}
 
 	@Override

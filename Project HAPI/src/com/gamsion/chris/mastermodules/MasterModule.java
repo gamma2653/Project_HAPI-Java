@@ -6,6 +6,7 @@ import java.util.Map;
 import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.LogFile;
+import com.gamsion.chris.utility.log.Utilities;
 
 public class MasterModule implements GamsionModule {
 	private Map<String, GamsionModule> modules = new HashMap<String, GamsionModule>();
@@ -64,10 +65,12 @@ public class MasterModule implements GamsionModule {
 
 	@Override
 	public void shutDown() {
+		logFile.add(Utilities.getDefaultLogShutdown(getName()));
 		for (GamsionModule gm : modules.values()) {
 			gm.shutDown();
 		}
 		readAllLogs();
+		
 	}
 
 	@Override
