@@ -3,7 +3,7 @@ package com.gamsion.chris.mastermodules;
 import com.gamsion.chris.EmotionModule.EmotionModule;
 import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.LogFile;
-import com.gamsion.chris.utility.log.Utilities;
+import com.gamsion.chris.utility.log.LogUtilities;
 
 /**
  * This class is used to create objects that contain all of the modules
@@ -12,9 +12,10 @@ import com.gamsion.chris.utility.log.Utilities;
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
  *
  */
-public class ControllerModule implements GamsionModule {
+public class ControllerModule implements GamsionModule, Cloneable {
 	private EmotionModule emotionModule = new EmotionModule(
-			"C:\\Users\\John\\Desktop\\save\\example2.txt");
+			"C:\\Users\\John\\Desktop\\save\\example2.txt",
+			"C:/Users/John/git/Project HAPI/Project HAPI/bin/com/gamsion/chris/EmotionModule/emotions");
 	private LogFile logFile = new LogFile(getName(), null);
 
 	@Override
@@ -35,7 +36,7 @@ public class ControllerModule implements GamsionModule {
 	@Override
 	public void shutDown() {
 		emotionModule.shutDown();
-		logFile.add(Utilities.getDefaultLogShutdown(getName()));
+		logFile.add(LogUtilities.getDefaultLogShutdown(getName()));
 	}
 
 	@Override
@@ -50,32 +51,40 @@ public class ControllerModule implements GamsionModule {
 
 	@Override
 	public LogFile readLog() {
-		LogFile joinedLog = new LogFile(getName(), null);
-		joinedLog.addAll(logFile);
-		joinedLog.addAll(emotionModule.readLog());
-
-		return joinedLog;
+		// Use com.gamsion.chris.utility.log.LogFile (extends ArrayList<String>)
+		// to store logs.
+		LogFile lf = new LogFile(getName(), null);
+		lf.addAll(this.logFile);
+		lf.addAll(emotionModule.readLog());
+		this.resetLog();
+		return lf;
 	}
 
 	@Override
 	public void resetLog() {
-		logFile.clear();
+		this.logFile.clear();
+		this.emotionModule.resetLog();
 
 	}
-	
+
 	/**
 	 * @return - A reference to the emotionModule
 	 */
-	public EmotionModule getEmotionModule(){
+	public EmotionModule getEmotionModule() {
 		return this.emotionModule;
 	}
+
 	@Override
-	public ControllerModule clone(){
-		ControllerModule cm = new ControllerModule();
+	public ControllerModule clone() {
+		ControllerModule cm;
+		try {
+			cm = (ControllerModule) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 		cm.emotionModule = this.getEmotionModule().clone();
-		LogFile lf = new LogFile(getName(), null);
-		lf.addAll(this.logFile);
-		cm.logFile = lf;
+		cm.logFile = this.logFile.clone();
 		return cm;
 	}
 

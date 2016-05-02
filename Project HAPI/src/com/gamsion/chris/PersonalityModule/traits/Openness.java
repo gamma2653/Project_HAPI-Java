@@ -1,7 +1,9 @@
 package com.gamsion.chris.PersonalityModule.traits;
 
-public class Optimism extends STDTrait{
-	private String PENTID = "optim";
+public class Openness extends STDTrait{
+
+	private String PENTID = "opene";
+	
 	@Override
 	public String getPentID() {
 		return PENTID;
@@ -9,7 +11,7 @@ public class Optimism extends STDTrait{
 
 	@Override
 	public String getName() {
-		return "Optmimism";
+		return "Openness";
 	}
-	
+
 }

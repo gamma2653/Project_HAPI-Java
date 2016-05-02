@@ -25,5 +25,8 @@ public class Vigilance extends STDEmotion {
 	public String getName() {
 		return "Vigilance";
 	}
+	public Vigilance clone() {
+		return (Vigilance) super.clone();
+	}
 
 }

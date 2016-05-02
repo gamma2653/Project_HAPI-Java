@@ -15,14 +15,15 @@ package com.gamsion.chris.EmotionModule.emotions;
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public abstract class STDEmotion {
-
+public abstract class STDEmotion implements Cloneable {
 	/**
 	 * It is based on a 1000000 value cap with a minimum of 0. For example if
 	 * Happy is at 1000000 that person is as happy as he can physically possibly
 	 * be.
 	 */
-	private int value = 500000;
+	private double value = 500000;
+	private double maxValue = 1000000;
+	private double lowestValue = 0;
 
 	/**
 	 * Checks the value. If it is above 1000000, ground it to 1000000. If it is
@@ -30,15 +31,15 @@ public abstract class STDEmotion {
 	 * 
 	 * @return - By how much was the original value off from the boundries.
 	 */
-	private int checkValue() {
-		if (value > 1000000) {
-			int returnint = 1000000 - value;
-			value = 1000000;
-			return returnint;
-		} else if (value < 0) {
-			int returnint = value;
-			value = 0;
-			return returnint;
+	public double checkValue() {
+		if (value > maxValue) {
+			double returndouble = maxValue - value;
+			value = maxValue;
+			return returndouble;
+		} else if (value < lowestValue) {
+			double returndouble = value;
+			value = lowestValue;
+			return returndouble;
 		}
 		return 0;
 	}
@@ -51,7 +52,7 @@ public abstract class STDEmotion {
 	 *            - How much to add.
 	 * @return - the new value.
 	 */
-	public int incrementValue(int numb) {
+	public double incrementValue(double numb) {
 		value += numb;
 		checkValue();
 		return value;
@@ -60,22 +61,22 @@ public abstract class STDEmotion {
 	/**
 	 * @return - The current stored value.
 	 */
-	public int getValue() {
+	public double getValue() {
 		return value;
 	}
 
 	/**
 	 * @return - The current inverse of the value.
 	 */
-	public int getNValue() {
-		return 1000000 - value;
+	public double getNValue() {
+		return maxValue - value;
 	}
 
 	/**
 	 * @param numb
 	 *            - What value to set value to.
 	 */
-	public void setValue(int numb) {
+	public void setValue(double numb) {
 		value = numb;
 		checkValue();
 	}
@@ -84,8 +85,8 @@ public abstract class STDEmotion {
 	 * @param numb
 	 *            - Sets the NValue to the requested value.
 	 */
-	public void setNValue(int numb) {
-		value = 1000000 - numb;
+	public void setNValue(double numb) {
+		value = maxValue - numb;
 		checkValue();
 	}
 
@@ -96,7 +97,7 @@ public abstract class STDEmotion {
 	 *            The percentage you want to make.
 	 * @return
 	 */
-	public int percentValue(int numb) {
+	public double percentValue(double numb) {
 		value *= numb;
 		value /= 100;
 		checkValue();
@@ -112,13 +113,26 @@ public abstract class STDEmotion {
 	 * @return - the String name of the emotion.
 	 */
 	public abstract String getName();
-	
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuilder strb = new StringBuilder(this.getPentID());
 		strb.append("=");
 		strb.append(this.getValue());
 		return strb.toString();
+	}
+
+	public STDEmotion clone() {
+		STDEmotion em;
+		try {
+			em = (STDEmotion) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		em.value = this.value;
+		em.lowestValue = this.lowestValue;
+		em.maxValue = this.maxValue;
+		return em;
 	}
 }

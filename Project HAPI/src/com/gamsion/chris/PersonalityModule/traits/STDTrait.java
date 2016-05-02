@@ -15,22 +15,22 @@ package com.gamsion.chris.PersonalityModule.traits;
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public abstract class STDTrait {
+public abstract class STDTrait implements Cloneable{
 
 	/**
-	 * It is based on a 1000000 value cap with a minimum of 0. For example if
-	 * Happy is at 1000000 that person is as happy as he can physically possibly
+	 * It is based on a 1000 value cap with a minimum of 0. For example if
+	 * Happy is at 1000 that person is as happy as he can physically possibly
 	 * be.
 	 */
-	private double value = 100;
-	private double maxValue = 200;
+	private double value = 500;
+	private double maxValue = 1000;
 	private double lowestValue = 0;
 
 	/**
-	 * Checks the value. If it is above 1000000, ground it to 1000000. If it is
+	 * Checks the value. If it is above 1000, ground it to 1000. If it is
 	 * below 0, raise it to 0.
 	 * 
-	 * @return - By how much was the original value off from the boundries.
+	 * @return - By how much was the original value off from the boundaries.
 	 */
 	private double checkValue() {
 		if (value > maxValue) {
@@ -47,7 +47,7 @@ public abstract class STDTrait {
 
 	/**
 	 * Adds the parameter to the value (then checks the value) then returns the
-	 * new value incase you wanted it. (Got that idea from lua)
+	 * new value in case you wanted it. (Got that idea from Lua)
 	 * 
 	 * @param numb
 	 *            - How much to add.
@@ -122,5 +122,19 @@ public abstract class STDTrait {
 		strb.append("=");
 		strb.append(this.getValue());
 		return strb.toString();
+	}
+	
+	public STDTrait clone(){
+		STDTrait t;
+		try {
+			t = (STDTrait) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		t.lowestValue = this.lowestValue;
+		t.maxValue = this.maxValue;
+		t.value = this.value;
+		return t;
 	}
 }

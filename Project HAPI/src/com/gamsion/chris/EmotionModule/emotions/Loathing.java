@@ -25,5 +25,8 @@ public class Loathing extends STDEmotion {
 	public String getName() {
 		return "Loathing";
 	}
+	public Loathing clone() {
+		return (Loathing) super.clone();
+	}
 
 }

@@ -25,5 +25,8 @@ public class Rage extends STDEmotion {
 	public String getName() {
 		return "Rage";
 	}
+	public Rage clone() {
+		return (Rage) super.clone();
+	}
 
 }

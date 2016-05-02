@@ -25,5 +25,8 @@ public class Amazement extends STDEmotion {
 	public String getName() {
 		return "Amazement";
 	}
+	public Amazement clone() {
+		return (Amazement) super.clone();
+	}
 
 }

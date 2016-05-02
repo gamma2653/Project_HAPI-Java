@@ -6,9 +6,9 @@ import java.util.Map;
 import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.LogFile;
-import com.gamsion.chris.utility.log.Utilities;
+import com.gamsion.chris.utility.log.LogUtilities;
 
-public class MasterModule implements GamsionModule {
+public class MasterModule implements GamsionModule, Cloneable {
 	private Map<String, GamsionModule> modules = new HashMap<String, GamsionModule>();
 	// this module's logFile
 	private LogFile logFile = new LogFile(getName(), null);
@@ -65,12 +65,12 @@ public class MasterModule implements GamsionModule {
 
 	@Override
 	public void shutDown() {
-		logFile.add(Utilities.getDefaultLogShutdown(getName()));
+		logFile.add(LogUtilities.getDefaultLogShutdown(getName()));
 		for (GamsionModule gm : modules.values()) {
 			gm.shutDown();
 		}
 		readAllLogs();
-		
+
 	}
 
 	@Override
@@ -80,43 +80,64 @@ public class MasterModule implements GamsionModule {
 
 	@Override
 	public boolean hasLog() {
+		this.checkLogs();
 		return !logFile.isEmpty();
 	}
 
 	@Override
 	public LogFile readLog() {
-		return logFile;
+		this.readAllLogs();
+		LogFile lf = new LogFile(getName(), null);
+		lf.addAll(this.logFile);
+		this.resetLog();
+		return lf;
+
 	}
 
 	@Override
 	public void resetLog() {
 		logFile.clear();
+		for (GamsionModule gm : this.modules.values()) {
+			gm.resetLog();
+		}
 
 	}
 
 	public void addModule(GamsionModule gm) {
 		modules.put(gm.getUName(), gm);
 	}
+
 	@Override
-	public MasterModule clone(){
-		MasterModule mm = new MasterModule();
-		Map<String, GamsionModule> moduletemp = new HashMap<String, GamsionModule>();
-		moduletemp.putAll(this.modules);
-		mm.modules = moduletemp;
-		LogFile lf = new LogFile(getName(), null);
-		lf.addAll(this.logFile);
-		mm.logFile = lf;
+	public MasterModule clone() {
+		this.readAllLogs();
+		MasterModule mm;
+		try {
+			mm = (MasterModule) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		for (GamsionModule gm : this.modules.values()) {
+			if (gm instanceof Cloneable) {
+				mm.addModule(gm.clone());
+			} else {
+				throw new RuntimeException("Cloning is not supported for "
+						+ gm.getName() + ".");
+			}
+		}
+
+		mm.logFile = this.logFile.clone();
 		return mm;
 	}
 
 	public static void main(String[] args) {
 
 		MasterModule mm = new MasterModule();
-		mm.getControllerModule().getEmotionModule().randomize("happy", 100);
+		mm.getControllerModule().getEmotionModule().setEmotion("admir", 10000);
 		System.out.println(mm.getControllerModule().getEmotionModule()
-				.getEmotionSafe("happy").getValue());
-		mm.shutDown();
-
+				.getEmotionSafe("admir"));
+		System.out.println(mm.getControllerModule().getEmotionModule().getEmotionList());
+		mm.readAllLogs();
 	}
 
 }

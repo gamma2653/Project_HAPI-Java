@@ -25,5 +25,8 @@ public class Terror extends STDEmotion {
 	public String getName() {
 		return "Terror";
 	}
+	public Terror clone() {
+		return (Terror) super.clone();
+	}
 
 }

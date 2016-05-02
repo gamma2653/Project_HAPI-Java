@@ -12,7 +12,7 @@ package com.gamsion.chris.EmotionModule.emotions;
  * @author gamma2626 a.k.a. Christopher De Jesus
  * @see STDEmotion
  */
-public class Admiration extends STDEmotion {
+public class Admiration extends STDEmotion implements Cloneable {
 
 	private static final String PENTID = "admir";
 
@@ -24,6 +24,10 @@ public class Admiration extends STDEmotion {
 	@Override
 	public String getName() {
 		return "Admiration";
+	}
+
+	public Admiration clone() {
+		return (Admiration) super.clone();
 	}
 
 }

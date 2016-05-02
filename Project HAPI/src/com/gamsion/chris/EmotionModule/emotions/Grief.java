@@ -26,5 +26,8 @@ public class Grief extends STDEmotion {
 	public String getName() {
 		return "Grief";
 	}
+	public Grief clone() {
+		return (Grief) super.clone();
+	}
 
 }

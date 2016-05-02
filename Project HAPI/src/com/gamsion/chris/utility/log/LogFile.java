@@ -13,7 +13,7 @@ import java.util.List;
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public class LogFile extends ArrayList<Log> {
+public class LogFile extends ArrayList<Log> implements Cloneable{
 	private static final long serialVersionUID = 1L;
 	private static final DateFormat logDateFormat = new SimpleDateFormat(
 			"HH.mm.ss: ");
@@ -73,6 +73,12 @@ public class LogFile extends ArrayList<Log> {
 
 	public boolean getOverrideLogName() {
 		return overrideName;
+	}
+	public LogFile clone(){
+		LogFile logFile = (LogFile) super.clone();
+		logFile.module = this.module;
+		logFile.overrideName = this.overrideName;
+		return logFile;
 	}
 
 }

@@ -76,4 +76,6 @@ public interface GamsionModule{
 	 * You should reset the logFile, preferably by calling the .clear() method of the object.
 	 */
 	public void resetLog();
+
+	public GamsionModule clone();
 }

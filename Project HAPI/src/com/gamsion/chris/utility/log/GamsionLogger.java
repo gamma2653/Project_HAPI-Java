@@ -18,7 +18,7 @@ import com.gamsion.chris.utility.GamsionModule;
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public class GamsionLogger implements GamsionModule {
+public class GamsionLogger implements GamsionModule, Cloneable {
 	/**
 	 * Raw information. Any small action.
 	 */
@@ -231,6 +231,21 @@ public class GamsionLogger implements GamsionModule {
 
 	public static boolean hasGlobalLog() {
 		return !globalLog.isEmpty();
+	}
+	public GamsionLogger clone(){
+		GamsionLogger logger;
+		try {
+			logger = (GamsionLogger) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		logger.fullLog = new StringBuilder(this.fullLog);
+		logger.pickupLevel = this.pickupLevel;
+		logger.save_location = this.save_location;
+		return logger;
+		
 	}
 
 }
