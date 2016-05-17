@@ -14,7 +14,7 @@ package com.gamsion.chris.EmotionModule.emotions;
  */
 public class Rage extends STDEmotion {
 
-	private static final String PENTID = "Grage";
+	private static final String PENTID = "grage";
 
 	@Override
 	public String getPentID() {
