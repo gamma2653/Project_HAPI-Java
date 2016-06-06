@@ -7,17 +7,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import com.gamsion.chris.EmotionModule.emotions.STDEmotion;
 import com.gamsion.chris.utility.GamsionModule;
-import com.gamsion.chris.utility.Utilities;
 import com.gamsion.chris.utility.exceptions.EmotionModuleFileException;
 import com.gamsion.chris.utility.exceptions.EmotionNotFoundInSaveException;
 import com.gamsion.chris.utility.exceptions.EmotionValueOutOfBoundsException;
@@ -27,8 +24,6 @@ import com.gamsion.chris.utility.log.Log;
 import com.gamsion.chris.utility.log.LogFile;
 import com.gamsion.chris.utility.log.LogUtilities;
 
-
-
 /**
  * The purpose of this class is to create an instance of Emotions. From there
  * you are able to manipulate the emotions depending on your program. It is also
@@ -37,16 +32,17 @@ import com.gamsion.chris.utility.log.LogUtilities;
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
  */
 public class EmotionModule implements GamsionModule, Cloneable {
+
 	private LogFile logFile = new LogFile(getName(), null);
 	// Global Random generator object.
 	public final Random r = new Random();
 	// Here are all the emotions to be used
-	private Map<String, STDEmotion> emotions = null;
+	STDEmotion admiration, amazement, grief, happiness, loathing, rage, terror,
+			vigilance;
 	// The save file
 	private File savefile;
 	// String of the save file's path
 	private String save_location;
-	private String emotion_folder_location;
 
 	@Override
 	public boolean hasLog() {
@@ -64,24 +60,6 @@ public class EmotionModule implements GamsionModule, Cloneable {
 		return lf;
 	}
 
-
-
-	/**
-	 * This loads the emotions into the Module. May be invoked after initial
-	 * instantiation to update the emotion list.
-	 */
-	public void loadEmotions() {
-		List<STDEmotion> list = new ArrayList<STDEmotion>();
-		list = Utilities.getClassesAsEmotions(Utilities.getFilesAsClass(this.emotion_folder_location));
-		emotions = new HashMap<String, STDEmotion>();
-		for (STDEmotion em : list)
-			emotions.put(em.getPentID(), em);
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Emotions were loaded from "
-						+ this.emotion_folder_location + ".", GamsionLogger.DEBUG));
-
-	}
-
 	/**
 	 * Use this to verify that a save location is properly formated and
 	 * reachable by the Emotion Module.
@@ -91,68 +69,8 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * @throws EmotionValueOutOfBoundsException
 	 * @throws EmotionNotFoundInSaveException
 	 */
-	public void verifySave() throws EmotionModuleFileException,
-			SuccessfulSaveCreationException, EmotionValueOutOfBoundsException,
-			EmotionNotFoundInSaveException {
-		try {
-			// Here I check to see if the file exists and if not writes to it.
-			if (!savefile.exists()) {
-				savefile.createNewFile();
-				if (!savefile.exists())
-					throw new EmotionModuleFileException(
-							EmotionModuleFileException.FILE_CAUSE);
+	public void verifySave() {
 
-				// Here are default values
-				Iterator<STDEmotion> it = emotions.values().iterator();
-
-				while (it.hasNext()) {
-					STDEmotion em = it.next();
-					writeEmotion(savefile, em, -1, false);
-				}
-				throw new SuccessfulSaveCreationException(
-						SuccessfulSaveCreationException.STANDARD_CAUSE);
-			}
-			FileReader fr = new FileReader(savefile);
-			BufferedReader br = new BufferedReader(fr);
-			// Here I will check each value to see if it is valid
-			String line;
-			while ((line = br.readLine()) != null) {
-				line = line.trim();
-				if ((!line.equals("")) && !line.equals(System.lineSeparator())) {
-					Iterator<STDEmotion> it = emotions.values().iterator();
-					boolean found = false;
-					while (it.hasNext()) {
-						String name = line.substring(0, 5);
-						String value = line.substring(6).trim();
-						STDEmotion em = it.next().clone();
-						if (name.equalsIgnoreCase(em.getPentID()))
-							found = true;
-						em.setValue(Integer.valueOf(value));
-						double check = em.checkValue();
-						if (check != 0) {
-							br.close();
-							throw new EmotionModuleFileException(em.getName()
-									+ " in the save file was " + check
-									+ " away from a boundary.");
-						}
-
-					}
-					if (!found) {
-						br.close();
-						throw new EmotionNotFoundInSaveException(
-								EmotionNotFoundInSaveException.STANDARD_CAUSE
-										+ line);
-					}
-				}
-
-			}
-
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Verified Save.", GamsionLogger.DEBUG));
 	}
 
 	/**
@@ -161,42 +79,6 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * @throws EmotionNotFoundInSaveException
 	 */
 	public void loadSave() throws EmotionNotFoundInSaveException {
-		try {
-			FileReader fr = new FileReader(savefile);
-			BufferedReader br = new BufferedReader(fr);
-			String line;
-			boolean found = false;
-			// Iterate the save file
-			while ((line = br.readLine()) != null) {
-				if ((!line.equals("")) && !line.equals(System.lineSeparator())) {
-					String subinfo = line.substring(0, line.indexOf("="));
-					String info = line.substring(line.indexOf("=") + 1);
-					Collection<STDEmotion> c = emotions.values();
-					Iterator<STDEmotion> it = c.iterator();
-					while (it.hasNext()) {
-						STDEmotion emotion = it.next();
-						if (emotion.getPentID().equals(subinfo)) {
-							emotion.setValue(Integer.parseInt(info));
-							emotions.put(emotion.getPentID(), emotion);
-							found = true;
-						}
-
-					}
-					if (!found) {
-						br.close();
-						throw new EmotionNotFoundInSaveException(
-								EmotionNotFoundInSaveException.STANDARD_CAUSE
-										+ line);
-					}
-				}
-			}
-			br.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Saves were loaded.", GamsionLogger.DEBUG));
 
 	}
 
@@ -204,14 +86,7 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * Saves the emotions into the save file.
 	 */
 	public void save() {
-		Iterator<String> it = emotions.keySet().iterator();
-		while (it.hasNext()) {
-			String key = it.next();
-			writeEmotion(savefile, emotions.get(key), -1,
-					emotions.containsKey(key));
-		}
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Emotions were saved.", GamsionLogger.DEBUG));
+
 	}
 
 	/**
@@ -220,26 +95,12 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * @param emotion_folder
 	 *            - directories of the emotions to use.
 	 */
-	public EmotionModule(String save_location, String emotion_folder) {
+	public EmotionModule(String save_location) {
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
 				getName(), "EmotionModule is initializing.",
 				GamsionLogger.DEBUG));
 		this.setSave_location(save_location);
-		this.setEmotion_folder(emotion_folder);
 
-		try {
-			verifySave();
-			loadSave();
-
-		} catch (EmotionModuleFileException e) {
-			e.printStackTrace();
-		} catch (SuccessfulSaveCreationException e) {
-			e.printStackTrace();
-		} catch (EmotionValueOutOfBoundsException e) {
-			e.printStackTrace();
-		} catch (EmotionNotFoundInSaveException e) {
-			e.printStackTrace();
-		}
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
 				getName(), "EmotionModule has been initialized.",
 				GamsionLogger.DEBUG));
@@ -272,6 +133,7 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 */
 	public static void writeEmotion(File f, STDEmotion em, double value,
 			boolean overwrite) {
+		/**
 		GamsionLogger.globalLogFileAdd(new Log(LogFile.getLogDateFormat()
 				.format(new Date()), "Static Emotion Module", em.getPentID()
 				+ " is being overwritten with the value " + value
@@ -341,14 +203,38 @@ public class EmotionModule implements GamsionModule, Cloneable {
 				+ "to the file " + f.getAbsolutePath()
 				+ " (overwrite was set to " + overwrite + ")",
 				GamsionLogger.DEBUG));
-
+**/
 	}
 
 	/**
 	 * @return - returns the current Map within EmotionModule
 	 */
-	public Map<String, STDEmotion> getEmotionList() {
+	public Map<String, STDEmotion> getEmotionMap() {
+		Map<String, STDEmotion> emotions = new HashMap<String, STDEmotion>();
+		emotions.put("admiration", admiration);
+		emotions.put("amazement", amazement);
+		emotions.put("grief", grief);
+		emotions.put("happiness", happiness);
+		emotions.put("loathing", loathing);
+		emotions.put("rage", rage);
+		emotions.put("terror", terror);
+		emotions.put("vigilance", vigilance);
+		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+				getName(), "Emotions list was gotten.", GamsionLogger.DEBUG));
+		return emotions;
 
+	}
+
+	public List<STDEmotion> getEmotionList() {
+		List<STDEmotion> emotions = new ArrayList<STDEmotion>();
+		emotions.add(admiration);
+		emotions.add(amazement);
+		emotions.add(grief);
+		emotions.add(happiness);
+		emotions.add(loathing);
+		emotions.add(rage);
+		emotions.add(terror);
+		emotions.add(vigilance);
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
 				getName(), "Emotions list was gotten.", GamsionLogger.DEBUG));
 		return emotions;
@@ -357,30 +243,33 @@ public class EmotionModule implements GamsionModule, Cloneable {
 
 	/**
 	 * @param pentID
-	 *            - pentID to find the emotion
-	 * @return - returns the emotion within the map you requested. It uses
-	 *         generic so you do not need to cast. <b>Safe casting is not
-	 *         guaranteed.</b>
-	 */
-	public <T extends STDEmotion> T getEmotionUnsafe(String pentID) {
-		@SuppressWarnings("unchecked")
-		T emotion = (T) emotions.get(pentID);
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Unsafe Emotion was taken:", GamsionLogger.DEBUG));
-		return emotion;
-	}
-
-	/**
-	 * @param pentID
 	 *            - pentID to find emotion
 	 * @return - returns the emotion within the map you requested. Cast it into
 	 *         the needed emotion.
 	 */
-	public STDEmotion getEmotionSafe(String pentID) {
-		STDEmotion emotion = emotions.get(pentID);
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), "Safe Emotion was gotten: " + pentID,
-				GamsionLogger.DEBUG));
+	public STDEmotion getEmotion(String pentID) {
+		STDEmotion emotion;
+		if (pentID.equalsIgnoreCase("admiration")) {
+			emotion = admiration;
+		} else if (pentID.equalsIgnoreCase("amazement")) {
+			emotion = amazement;
+		} else if (pentID.equalsIgnoreCase("grief")) {
+			emotion = grief;
+		} else if (pentID.equalsIgnoreCase("happiness")) {
+			emotion = happiness;
+		} else if (pentID.equalsIgnoreCase("loathing")) {
+			emotion = loathing;
+		} else if (pentID.equalsIgnoreCase("rage")) {
+			emotion = rage;
+		} else if (pentID.equalsIgnoreCase("terror")) {
+			emotion = terror;
+		} else if (pentID.equalsIgnoreCase("vigilance")) {
+			emotion = vigilance;
+		} else {
+			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+					getName(), pentID + " was not found.", GamsionLogger.ERROR));
+			emotion = null;
+		}
 		return emotion;
 	}
 
@@ -393,16 +282,11 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 *            - value to set the emotion.
 	 * @return - if the emotion is not found, returns false. Otherwise, true.
 	 */
-	public boolean setEmotion(String pentID, double value) {
-		if (!emotions.containsKey(pentID))
-			return false;
-		STDEmotion em = emotions.get(pentID);
-		em.setValue(value);
-		emotions.put(pentID, em);
-		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), em.getName() + " was set to " + em.getValue(),
-				GamsionLogger.DEBUG));
-		return true;
+	public void setEmotion(String pentID, double value) {
+		if (this.getEmotion(pentID) == null)
+			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+					getName(), pentID + " was not found", GamsionLogger.ERROR));
+		this.getEmotion(pentID).setValue(value);
 	}
 
 	/**
@@ -413,19 +297,19 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * @return - if the emotion is not found, returns false. Otherwise, true.
 	 */
 	public boolean incrementEmotion(String pentID, double value) {
-		if (!emotions.containsKey(pentID))
-			return false;
-		STDEmotion em = emotions.get(pentID);
-		em.incrementValue(value);
-		emotions.put(pentID, em);
+		if (this.getEmotion(pentID) == null)
+			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+					getName(), pentID + " was not found", GamsionLogger.ERROR));
+		this.getEmotion(pentID).incrementValue(value);
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), em.getName() + "was increased by " + value
-						+ " new value: " + em.getValue(), GamsionLogger.DEBUG));
+				getName(), pentID + "was increased by " + value
+						+ ". New value: " + this.getEmotion(pentID).getValue(),
+				GamsionLogger.DEBUG));
 		return true;
 	}
 
 	/**
-	 * @param pentIDp
+	 * @param name
 	 *            - pentID of the emotion. If null, will randomize all emotions.
 	 * @param factor
 	 *            - Amount of Error you want to randomize it by.
@@ -437,29 +321,25 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 *            200), the end value will be anywhere from 499900 - 500100.
 	 *            </p>
 	 */
-	public void randomize(String pentIDp, int factor) {
-		if (pentIDp == null) {
+	public void randomize(String name, int factor) {
+		if (name == null) {
 			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
 					getName(), "Emotions were randomized.", GamsionLogger.DEBUG));
-			Iterator<String> it = emotions.keySet().iterator();
-			while (it.hasNext()) {
-				String pentID = it.next();
-				incrementEmotion(pentID, (r.nextInt(factor + 1) - factor / 2));
-			}
-		} else {
-			incrementEmotion(pentIDp, (r.nextInt(factor + 1) - factor / 2));
-			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-					getName(), pentIDp + " was randomized.",
-					GamsionLogger.DEBUG));
-		}
-	}
 
-	/**
-	 * @param eml
-	 *            - list to set as the emotions.
-	 */
-	public void setEmotionList(Map<String, STDEmotion> eml) {
-		this.emotions = eml;
+			incrementEmotion("admiration", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("amazement", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("grief", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("happiness", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("loathing", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("rage", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("terror", (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion("vigilance", (r.nextInt(factor + 1) - factor / 2));
+
+		} else {
+			incrementEmotion(name, (r.nextInt(factor + 1) - factor / 2));
+			logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()),
+					getName(), name + " was randomized.", GamsionLogger.DEBUG));
+		}
 	}
 
 	@Override
@@ -528,12 +408,15 @@ public class EmotionModule implements GamsionModule, Cloneable {
 			e.printStackTrace();
 			return null;
 		}
-		em.setEmotion_folder(this.emotion_folder_location);
 		em.setSave_location(save_location);
-
-		HashMap<String, STDEmotion> tempEmotionList = new HashMap<String, STDEmotion>();
-		tempEmotionList.putAll(emotions);
-		em.setEmotionList(tempEmotionList);
+		em.admiration = this.admiration.clone();
+		em.amazement = this.amazement.clone();
+		em.grief = this.grief.clone();
+		em.happiness = this.happiness.clone();
+		em.loathing = this.loathing.clone();
+		em.rage = this.rage.clone();
+		em.terror = this.terror.clone();
+		em.vigilance = this.vigilance.clone();
 
 		LogFile temp = this.logFile.clone();
 		temp.addAll(em.logFile);
@@ -547,17 +430,6 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * @param location
 	 *            - Absolute path to folder.
 	 */
-	public void setEmotion_folder(String location) {
-		this.emotion_folder_location = location;
-		this.loadEmotions();
-	}
-
-	/**
-	 * @return - the path to the folder.
-	 */
-	public String getEmotion_folder() {
-		return this.emotion_folder_location;
-	}
 
 }
 
