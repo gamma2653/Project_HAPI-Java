@@ -3,6 +3,7 @@ package com.gamsion.chris.mastermodules;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.gamsion.chris.EmotionModule.emotions.EmotionType;
 import com.gamsion.chris.utility.GamsionModule;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.LogFile;
@@ -14,8 +15,7 @@ public class MasterModule implements GamsionModule, Cloneable {
 	private LogFile logFile = new LogFile(getName(), null);
 
 	public MasterModule() {
-		GamsionLogger gm = new GamsionLogger(GamsionLogger.DEBUG,
-				"C:\\Users\\John\\logs\\");
+		GamsionLogger gm = new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\Chris\\logs\\");
 		ControllerModule cm = new ControllerModule();
 		modules.put(gm.getUName(), gm);
 		modules.put(cm.getUName(), cm);
@@ -29,7 +29,10 @@ public class MasterModule implements GamsionModule, Cloneable {
 		GamsionLogger logger = this.getGamsionLogger();
 		checkLogs();
 		logger.log(logFile, true);
-		logger.saveLog();
+		if (!logger.saveLog()) {
+			System.out.printf("%s (%s) was not able to save. Log data lost: %s", logger.getName(),
+					logger.getDescription(), logger.getFullLog().toString());
+		}
 
 	}
 
@@ -121,8 +124,7 @@ public class MasterModule implements GamsionModule, Cloneable {
 			if (gm instanceof Cloneable) {
 				mm.addModule(gm.clone());
 			} else {
-				throw new RuntimeException("Cloning is not supported for "
-						+ gm.getName() + ".");
+				throw new RuntimeException(String.format("Cloning is not support for %s.", gm.getName()));
 			}
 		}
 
@@ -131,13 +133,16 @@ public class MasterModule implements GamsionModule, Cloneable {
 	}
 
 	public static void main(String[] args) {
-
 		MasterModule mm = new MasterModule();
-		mm.getControllerModule().getEmotionModule().setEmotion("admir", 10000);
-		System.out.println(mm.getControllerModule().getEmotionModule()
-				.getEmotionSafe("admir"));
-		System.out.println(mm.getControllerModule().getEmotionModule().getEmotionList());
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		mm.getControllerModule().getEmotionModule().initializeEM();
+		mm.getControllerModule().getEmotionModule().setEmotion(EmotionType.admiration, 10000);
 		mm.readAllLogs();
+
 	}
 
 }

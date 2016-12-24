@@ -15,7 +15,23 @@ package com.gamsion.chris.EmotionModule.emotions;
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public class STDEmotion implements Cloneable {
+public class Emotion implements Cloneable {
+	/**
+	 * Used to identify emotion
+	 */
+	private EmotionType emotionID;
+	
+	/**
+	 * Constructor for creating an emotion.
+	 * @param emotionID - Necessary to identify emotion.
+	 */
+	public Emotion(EmotionType emotionID){
+		this.emotionID = emotionID;
+	}
+	public EmotionType getType(){
+		return emotionID;
+	}
+	
 	/**
 	 * It is based on a 1000000 value cap with a minimum of 0. For example if
 	 * Happy is at 1000000 that person is as happy as he can physically possibly
@@ -113,10 +129,10 @@ public class STDEmotion implements Cloneable {
 		return String.valueOf(this.value);
 	}
 
-	public STDEmotion clone() {
-		STDEmotion em;
+	public Emotion clone() {
+		Emotion em;
 		try {
-			em = (STDEmotion) super.clone();
+			em = (Emotion) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
@@ -124,6 +140,7 @@ public class STDEmotion implements Cloneable {
 		em.value = this.value;
 		em.lowestValue = this.lowestValue;
 		em.maxValue = this.maxValue;
+		em.emotionID = this.emotionID;
 		return em;
 	}
 }

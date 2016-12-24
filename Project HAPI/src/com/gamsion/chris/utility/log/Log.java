@@ -57,7 +57,7 @@ public class Log {
 	 */
 	public String getLog(boolean b) {
 		if (b) {
-			return time + "[" + module + "] " + message;
+			return String.format("[%s] %s: [%s] %s", GamsionLogger.levelNames[degree], time, module, message);
 		} else {
 			return message;
 		}

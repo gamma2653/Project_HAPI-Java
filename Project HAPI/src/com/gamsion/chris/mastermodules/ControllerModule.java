@@ -13,9 +13,7 @@ import com.gamsion.chris.utility.log.LogUtilities;
  *
  */
 public class ControllerModule implements GamsionModule, Cloneable {
-	private EmotionModule emotionModule = new EmotionModule(
-			"C:\\Users\\John\\Desktop\\save\\example2.txt",
-			"C:/Users/John/git/Project HAPI/Project HAPI/bin/com/gamsion/chris/EmotionModule/emotions");
+	private EmotionModule emotionModule = new EmotionModule("gamma", "C:\\Users\\John\\Desktop\\save\\example2.txt");
 	private LogFile logFile = new LogFile(getName(), null);
 
 	@Override

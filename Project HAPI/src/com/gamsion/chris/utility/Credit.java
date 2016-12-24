@@ -1,7 +1,7 @@
 package com.gamsion.chris.utility;
 
 public class Credit {
-	private double credit;
+//	private double credit;
 
 	public <U extends Number> Credit(U credit) {
 

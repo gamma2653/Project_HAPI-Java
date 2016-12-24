@@ -43,8 +43,7 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 	 * Used to find the name of each degree. (0=DEBUG, 1=INFO, 2=ERROR,
 	 * 3=SEVERE, 4=FATAL)
 	 */
-	public static final String[] levelNames = { "DEBUG", "INFO", "ERROR",
-			"SEVERE", "FATAL" };
+	public static final String[] levelNames = { "DEBUG", "INFO", "ERROR", "SEVERE", "FATAL" };
 	private int pickupLevel;
 	private String save_location;
 	private StringBuilder fullLog = new StringBuilder();
@@ -110,8 +109,7 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 			}
 		} else {
 			for (Log log : logFile) {
-				String str = log.getTime(true) + "[" + logFile.getModule()
-						+ "] " + log.getLog(false);
+				String str = log.getTime(true) + "[" + logFile.getModule() + "] " + log.getLog(false);
 
 				fullLog.append(str + System.lineSeparator());
 				if (log.getDegree() >= pickupLevel) {
@@ -119,16 +117,18 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 				}
 			}
 		}
+
 	}
 
 	public boolean saveLog() {
-		final DateFormat fileDateFormat = new SimpleDateFormat(
-				"yyyy_MM_dd-HH_mm_ss");
+		final DateFormat fileDateFormat = new SimpleDateFormat("yyyy_MM_dd-HH_mm_ss");
 		Date date = new Date();
 		File f = new File(save_location + fileDateFormat.format(date) + ".log");
 		try {
 			if (!f.exists()) {
-				new File(save_location).mkdir();
+				if (new File(save_location).mkdir())
+					return false;
+				System.out.println(f.getAbsolutePath());
 				if (!f.createNewFile())
 					return false;
 
@@ -147,17 +147,14 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 	}
 
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
-		GamsionLogger logger = new GamsionLogger(GamsionLogger.DEBUG,
-				"C:\\Users\\John\\logs\\");
+		long start = System.nanoTime();
+		GamsionLogger logger = new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\John\\logs\\");
 		List<Log> logsForFile = new ArrayList<Log>();
-		logsForFile.add(new Log(null, "Test", "This is a test.",
-				GamsionLogger.INFO));
-		logsForFile.add(new Log(null, "Test2", "This is too.",
-				GamsionLogger.INFO));
+		logsForFile.add(new Log(null, "Test", "This is a test.", GamsionLogger.INFO));
+		logsForFile.add(new Log(null, "Test2", "This is too.", GamsionLogger.INFO));
 		LogFile log = new LogFile("Tester", logsForFile);
 		logger.log(log, true);
-		long end = System.currentTimeMillis();
+		long end = System.nanoTime();
 		System.out.println(end - start);
 	}
 
@@ -188,8 +185,8 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 	@Override
 	public void shutDown() {
 		saveLog();
-		globalLog.add(new Log(LogFile.getLogDateFormat().format(new Date()),
-				getName(), getName() + " has been shutdown.", GamsionLogger.DEBUG));
+		globalLog.add(new Log(LogFile.getLogDateFormat().format(new Date()), getName(),
+				getName() + " has been shutdown.", GamsionLogger.DEBUG));
 	}
 
 	@Override
@@ -232,7 +229,8 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 	public static boolean hasGlobalLog() {
 		return !globalLog.isEmpty();
 	}
-	public GamsionLogger clone(){
+
+	public GamsionLogger clone() {
 		GamsionLogger logger;
 		try {
 			logger = (GamsionLogger) super.clone();
@@ -240,12 +238,12 @@ public class GamsionLogger implements GamsionModule, Cloneable {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		logger.fullLog = new StringBuilder(this.fullLog);
 		logger.pickupLevel = this.pickupLevel;
 		logger.save_location = this.save_location;
 		return logger;
-		
+
 	}
 
 }
