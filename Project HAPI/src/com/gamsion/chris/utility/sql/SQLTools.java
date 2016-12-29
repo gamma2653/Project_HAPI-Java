@@ -189,7 +189,7 @@ public class SQLTools {
 			e.printStackTrace();
 		}
 	}
-
+	//Debug/Testing Method
 	public static void main(String[] args) {
 		SQLTools sql = new SQLTools("saves//projecthapi.db");
 		sql.clearData();
