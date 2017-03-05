@@ -41,8 +41,13 @@ public class MasterModule implements GamsionModule, Cloneable {
 		}
 	}
 
-	public ControllerModule getControllerModule() {
-		return (ControllerModule) modules.get("Controller_Module");
+	public ControllerModule getControllerModule(String name) {
+		return (ControllerModule) modules.get(name);
+	}
+
+	public void addController(String name, double agreeableness, double conscientousness, double extraversion,
+			double neuroticism, double openness) {
+		modules.put(name, new ControllerModule(name, agreeableness, conscientousness, extraversion, neuroticism, openness));
 	}
 
 	public GamsionLogger getGamsionLogger() {
@@ -138,8 +143,13 @@ public class MasterModule implements GamsionModule, Cloneable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		mm.getControllerModule().getEmotion().initializeEM();
-		mm.getControllerModule().getEmotion().setEmotion(EmotionType.admiration, 10000);
+		mm.addController("gamma", 50000, 50000, 50000, 50000, 50000);
+		mm.getControllerModule("gamma").getEmotion().initializeEM();
+		mm.getControllerModule("gamma").getEmotion().setEmotion(EmotionType.admiration, 10000);
+		System.out.println(mm.getControllerModule("gamma").getEmotion().getEmotionList());
+		mm.getControllerModule("gamma").process(Action.ADMIRE, 100000);
+		System.out.println(mm.getControllerModule("gamma").getEmotion().getEmotionList());
+		
 		mm.readAllLogs();
 
 	}
