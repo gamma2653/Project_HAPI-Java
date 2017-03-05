@@ -17,29 +17,37 @@ package com.gamsion.chris.EmotionModule.emotions;
  */
 public class Emotion implements Cloneable {
 	/**
-	 * Used to identify emotion
-	 */
-	private EmotionType emotionID;
-	
-	/**
-	 * Constructor for creating an emotion.
-	 * @param emotionID - Necessary to identify emotion.
-	 */
-	public Emotion(EmotionType emotionID){
-		this.emotionID = emotionID;
-	}
-	public EmotionType getType(){
-		return emotionID;
-	}
-	
-	/**
 	 * It is based on a 1000000 value cap with a minimum of 0. For example if
 	 * Happy is at 1000000 that person is as happy as he can physically possibly
 	 * be.
 	 */
-	private double value = 500000;
-	private double maxValue = 1000000;
-	private double lowestValue = 0;
+	private double value;
+	private final double maxValue;
+	private final double minValue;
+	private final double balancedValue;
+	/**
+	 * Used to identify emotion
+	 */
+	private EmotionType emotionID;
+
+	/**
+	 * Constructor for creating an emotion.
+	 * 
+	 * @param emotionID
+	 *            - Necessary to identify emotion.
+	 */
+	public Emotion(EmotionType emotionID) {
+		this.emotionID = emotionID;
+		this.minValue = emotionID.minValue;
+		this.maxValue = emotionID.maxValue;
+		this.value = emotionID.startValue;
+		this.balancedValue = emotionID.balancedValue;
+
+	}
+
+	public EmotionType getType() {
+		return emotionID;
+	}
 
 	/**
 	 * Checks the value. If it is above 1000000, ground it to 1000000. If it is
@@ -52,9 +60,9 @@ public class Emotion implements Cloneable {
 			double returndouble = maxValue - value;
 			value = maxValue;
 			return returndouble;
-		} else if (value < lowestValue) {
+		} else if (value < minValue) {
 			double returndouble = value;
-			value = lowestValue;
+			value = minValue;
 			return returndouble;
 		}
 		return 0;
@@ -120,13 +128,12 @@ public class Emotion implements Cloneable {
 		return value;
 	}
 
-
-
-
-
 	@Override
 	public String toString() {
-		return String.valueOf(this.value);
+		StringBuilder strb = new StringBuilder(this.emotionID.toString());
+		strb.append("=");
+		strb.append(this.getValue());
+		return strb.toString();
 	}
 
 	public Emotion clone() {
@@ -137,10 +144,32 @@ public class Emotion implements Cloneable {
 			e.printStackTrace();
 			return null;
 		}
-		em.value = this.value;
-		em.lowestValue = this.lowestValue;
-		em.maxValue = this.maxValue;
-		em.emotionID = this.emotionID;
 		return em;
+	}
+
+	/**
+	 * Deprecated not since it's old... it's not yet fully usable.
+	 */
+	@Deprecated
+	public void tick() {
+		if (value > balancedValue) {
+			value -= 1;
+		} else if (value < balancedValue) {
+			value += 1;
+		}
+	}
+
+	/**
+	 * Deprecated not since it's old... it's not yet fully usable.
+	 */
+	@Deprecated
+	public void tick(int ticks) {
+		for (int i = 0; i < ticks; i++) {
+			if (value > balancedValue) {
+				value -= 1;
+			} else if (value < balancedValue) {
+				value += 1;
+			}
+		}
 	}
 }

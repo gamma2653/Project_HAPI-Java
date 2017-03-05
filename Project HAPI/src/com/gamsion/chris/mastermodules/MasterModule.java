@@ -15,10 +15,8 @@ public class MasterModule implements GamsionModule, Cloneable {
 	private LogFile logFile = new LogFile(getName(), null);
 
 	public MasterModule() {
-		GamsionLogger gm = new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\Chris\\logs\\");
-		ControllerModule cm = new ControllerModule();
+		GamsionLogger gm = new GamsionLogger(GamsionLogger.DEBUG, "C:\\Users\\Toshiba\\logs\\");
 		modules.put(gm.getUName(), gm);
-		modules.put(cm.getUName(), cm);
 	}
 
 	/**
@@ -134,13 +132,14 @@ public class MasterModule implements GamsionModule, Cloneable {
 
 	public static void main(String[] args) {
 		MasterModule mm = new MasterModule();
+		mm.getGamsionLogger().setPickupDegree(GamsionLogger.ERROR);
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		mm.getControllerModule().getEmotionModule().initializeEM();
-		mm.getControllerModule().getEmotionModule().setEmotion(EmotionType.admiration, 10000);
+		mm.getControllerModule().getEmotion().initializeEM();
+		mm.getControllerModule().getEmotion().setEmotion(EmotionType.admiration, 10000);
 		mm.readAllLogs();
 
 	}

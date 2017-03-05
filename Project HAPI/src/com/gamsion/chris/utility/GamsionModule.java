@@ -77,5 +77,9 @@ public interface GamsionModule{
 	 */
 	public void resetLog();
 
+	/**
+	 * Every module should also be 
+	 * @return
+	 */
 	public GamsionModule clone();
 }

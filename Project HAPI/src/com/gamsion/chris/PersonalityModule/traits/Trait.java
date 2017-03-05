@@ -2,29 +2,40 @@ package com.gamsion.chris.PersonalityModule.traits;
 
 /**
  * <p>
- * This is the template class for all traits. All traits should extends this
- * class.
- * </p>
- * <p>
  * These classes are used to create objects that would store values that are
- * manipulated by the provided methods. The methods could be overridden to
- * reflect unique properties of each trait. The default provided traits do
- * no make any such overrides.
+ * manipulated by the provided methods. 
  * </p>
  * 
  * @author gamma2626 a.k.a. Christopher De Jesus
  *
  */
-public abstract class STDTrait implements Cloneable{
-
+public class Trait implements Cloneable{
 	/**
-	 * It is based on a 1000 value cap with a minimum of 0. For example if
-	 * Happy is at 1000 that person is as happy as he can physically possibly
-	 * be.
+	 * It is based on a 100000 value cap with a minimum of 0. For example if
+	 * Agreeableness is at 100000 that person is as agreeable as Yes Man from Fallout New Vegas.
 	 */
-	private double value = 500;
-	private double maxValue = 1000;
-	private double lowestValue = 0;
+	private double value;
+	private final double maxValue;
+	private final double minValue;
+	private final double balancedValue;
+	
+	/**
+	 * Used to identify trait.
+	 */
+	private TraitType traitID;
+	/**
+	 * Constructor for creating a trait.
+	 * @param emotionID - Necessary to identify trait.
+	 */
+	public Trait(TraitType type, double value){
+		this.traitID = type;
+		this.minValue = traitID.minValue;
+		this.maxValue = traitID.maxValue;
+		this.value = value;
+		this.balancedValue = traitID.balancedValue;
+		
+	}
+
 
 	/**
 	 * Checks the value. If it is above 1000, ground it to 1000. If it is
@@ -37,9 +48,9 @@ public abstract class STDTrait implements Cloneable{
 			double returnnumb = maxValue - value;
 			value = 1000000;
 			return returnnumb;
-		} else if (value < lowestValue) {
+		} else if (value < minValue) {
 			double returnnumb = value;
-			value = lowestValue;
+			value = minValue;
 			return returnnumb;
 		}
 		return 0;
@@ -105,36 +116,36 @@ public abstract class STDTrait implements Cloneable{
 		return value;
 	}
 
-	/**
-	 * @return - the String id of the emotion.
-	 */
-	public abstract String getPentID();
 
-	/**
-	 * @return - the String name of the emotion.
-	 */
-	public abstract String getName();
-	
 	
 	@Override
 	public String toString(){
-		StringBuilder strb = new StringBuilder(this.getPentID());
+		StringBuilder strb = new StringBuilder(this.traitID.toString());
 		strb.append("=");
 		strb.append(this.getValue());
 		return strb.toString();
 	}
 	
-	public STDTrait clone(){
-		STDTrait t;
+	public Trait clone(){
+		Trait t;
 		try {
-			t = (STDTrait) super.clone();
+			t = (Trait) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 			return null;
 		}
-		t.lowestValue = this.lowestValue;
-		t.maxValue = this.maxValue;
-		t.value = this.value;
 		return t;
+	}
+
+	/**
+	 * Deprecated not since it's old... it's not yet fully usable.
+	 */
+	@Deprecated
+	public void tick(){
+		if(value>balancedValue){
+			value-=1;
+		}else if(value<balancedValue){
+			value+=1;
+		}
 	}
 }

@@ -1,7 +1,11 @@
 package com.gamsion.chris.mastermodules;
 
+import java.text.DecimalFormat;
+
 import com.gamsion.chris.EmotionModule.EmotionModule;
+import com.gamsion.chris.PersonalityModule.PersonalityModule;
 import com.gamsion.chris.utility.GamsionModule;
+import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.LogFile;
 import com.gamsion.chris.utility.log.LogUtilities;
 
@@ -13,8 +17,17 @@ import com.gamsion.chris.utility.log.LogUtilities;
  *
  */
 public class ControllerModule implements GamsionModule, Cloneable {
-	private EmotionModule emotionModule = new EmotionModule("gamma", "C:\\Users\\John\\Desktop\\save\\example2.txt");
-	private LogFile logFile = new LogFile(getName(), null);
+	protected String idName;
+	protected EmotionModule emotion = new EmotionModule(idName, "C:\\Users\\John\\Desktop\\save\\example2.txt");
+	protected PersonalityModule personality;
+	protected LogFile logFile = new LogFile(getName(), null);
+
+	public ControllerModule(String idName, double agreeableness, double conscientousness, double extraversion,
+			double neuroticism, double openness) {
+		this.idName = idName;
+		this.personality = new PersonalityModule(idName, agreeableness, conscientousness, extraversion, neuroticism,
+				openness);
+	}
 
 	@Override
 	public String getName() {
@@ -33,7 +46,8 @@ public class ControllerModule implements GamsionModule, Cloneable {
 
 	@Override
 	public void shutDown() {
-		emotionModule.shutDown();
+		emotion.shutDown();
+		personality.shutDown();
 		logFile.add(LogUtilities.getDefaultLogShutdown(getName()));
 	}
 
@@ -44,7 +58,7 @@ public class ControllerModule implements GamsionModule, Cloneable {
 
 	@Override
 	public boolean hasLog() {
-		return !logFile.isEmpty() || this.emotionModule.hasLog();
+		return !logFile.isEmpty() || this.emotion.hasLog() || this.personality.hasLog();
 	}
 
 	@Override
@@ -53,7 +67,8 @@ public class ControllerModule implements GamsionModule, Cloneable {
 		// to store logs.
 		LogFile lf = new LogFile(getName(), null);
 		lf.addAll(this.logFile);
-		lf.addAll(emotionModule.readLog());
+		lf.addAll(emotion.readLog());
+		lf.addAll(personality.readLog());
 		this.resetLog();
 		return lf;
 	}
@@ -61,15 +76,282 @@ public class ControllerModule implements GamsionModule, Cloneable {
 	@Override
 	public void resetLog() {
 		this.logFile.clear();
-		this.emotionModule.resetLog();
+		this.emotion.resetLog();
+		this.personality.resetLog();
 
 	}
 
 	/**
 	 * @return - A reference to the emotionModule
 	 */
-	public EmotionModule getEmotionModule() {
-		return this.emotionModule;
+	public EmotionModule getEmotion() {
+		return this.emotion;
+	}
+
+	public PersonalityModule getPersonality() {
+		return this.personality;
+	}
+
+	/**
+	 * @param action
+	 * @param magnitude
+	 *            - Out of a scale of 100000
+	 */
+	public void process(Action action, double magnitude) {
+		DecimalFormat df = new DecimalFormat("0.000");
+		double personalityMod1;
+		double personalityMod2;
+		double personalityMod3;
+		double personalityMod4;
+		double personalityMod5;
+		double personalityMod;
+		double value;
+		switch (action) {
+		case COMPLIMENT:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue() * .2);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue() * 0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue() * .15);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.5);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue() * .05);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/4));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/10);
+			break;
+		case ADMIRE:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue() * 0.2);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue() * 0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue() * 0.1);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue() * 0.4);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue() * .2);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/3));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/5); 
+			break;
+		case CHEER:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.2);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.5);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.1);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/4));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/10);
+			break;
+		case CARE:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*.2);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.15);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.3);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.25);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/4));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/10);
+			break;
+		case APPROVE:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.3);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.2);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.3);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.1);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/4));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/10);
+			break;
+		case NEUTRAL:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*.05);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.15);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.2);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getNValue()*.5);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value);
+			emotion.loathing.incrementValue(-value);
+			emotion.terror.incrementValue(-(value/4));
+			emotion.rage.incrementValue(-value/2);
+			emotion.vigilance.incrementValue(-value/10);
+			break;
+		case DISREGARD:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.2);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.5);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.1);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(-value);
+			emotion.admiration.incrementValue(-value/2);
+			emotion.grief.incrementValue(value);
+			emotion.loathing.incrementValue(value);
+			emotion.terror.incrementValue((value/4));
+			emotion.rage.incrementValue(value/2);
+			emotion.vigilance.incrementValue(value/10);
+			break;
+		case JOKE:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*0.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.3);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.25);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.25);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(value/2);
+			emotion.admiration.incrementValue(value/2);
+			emotion.grief.incrementValue(-value/2);
+			emotion.loathing.incrementValue(value/75);
+			emotion.terror.incrementValue(-(value/2));
+			emotion.rage.incrementValue(value/50);
+			emotion.vigilance.incrementValue(-value/2);
+			break;
+		case LOOKDOWN:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*0.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.2);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.1);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.5);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.1);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(-value);
+			emotion.admiration.incrementValue(-value/2);
+			emotion.grief.incrementValue(value/2);
+			emotion.loathing.incrementValue(-value/3);
+			emotion.terror.incrementValue(value/75);
+			emotion.rage.incrementValue(value/10);
+			emotion.vigilance.incrementValue(-value/2);
+			break;
+		case OFFEND:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*0.1);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.2);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.1);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.5);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.1);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(-value);
+			emotion.admiration.incrementValue(-value/2);
+			emotion.grief.incrementValue(value/2);
+			emotion.loathing.incrementValue(value/3);
+			emotion.terror.incrementValue(value/50);
+			emotion.rage.incrementValue(value/10);
+			emotion.vigilance.incrementValue(-value/5);
+			break;
+		case DESPISE:
+			personalityMod1 = (0.001 * personality.getTrait("agreeableness").getValue()*0.05);
+			personalityMod2 = (0.001 * personality.getTrait("conscientousness").getNValue()*0.1);
+			personalityMod3 = (0.001 * personality.getTrait("extraversion").getValue()*.1);
+			personalityMod4 = (0.001 * personality.getTrait("neuroticism").getNValue()*.7);
+			personalityMod5 = (0.001 * personality.getTrait("openness").getValue()*.05);
+			personalityMod = (personalityMod1+personalityMod2+personalityMod3+personalityMod4+personalityMod5)/50;
+			logFile.log(this,
+					String.format(
+							"New Process being processed by %s.\nmod1 = %s, mod2 = %s, mod3 = %s, mod4 = %s, mod5 = %s, mod = %s",
+							this.idName, df.format(personalityMod1), df.format(personalityMod2),
+							df.format(personalityMod3), df.format(personalityMod4), df.format(personalityMod5), df.format(personalityMod)),
+					GamsionLogger.DEBUG);
+			value = magnitude*personalityMod;
+			emotion.happiness.incrementValue(-value);
+			emotion.admiration.incrementValue(-value);
+			emotion.grief.incrementValue(value);
+			emotion.loathing.incrementValue(value/2);
+			emotion.terror.incrementValue(value/2);
+			emotion.rage.incrementValue(value/2);
+			emotion.vigilance.incrementValue(value/2);
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -81,9 +363,16 @@ public class ControllerModule implements GamsionModule, Cloneable {
 			e.printStackTrace();
 			return null;
 		}
-		cm.emotionModule = this.getEmotionModule().clone();
+		cm.emotion = this.getEmotion().clone();
+		cm.personality = this.getPersonality().clone();
 		cm.logFile = this.logFile.clone();
 		return cm;
+	}
+
+	public static void main(String[] args) {
+		ControllerModule cm = new ControllerModule("Mirkelis", 25000, 70000, 45000, 45000, 40000);
+		cm.process(Action.CHEER, 10000);
+		System.out.println(cm.getEmotion().getEmotionMap());
 	}
 
 }

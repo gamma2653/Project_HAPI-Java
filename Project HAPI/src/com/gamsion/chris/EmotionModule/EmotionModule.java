@@ -10,6 +10,7 @@ import java.util.Random;
 import com.gamsion.chris.EmotionModule.emotions.Emotion;
 import com.gamsion.chris.EmotionModule.emotions.EmotionType;
 import com.gamsion.chris.utility.GamsionModule;
+import com.gamsion.chris.utility.UniqueModule;
 import com.gamsion.chris.utility.exceptions.EmotionNotFoundInSaveException;
 import com.gamsion.chris.utility.log.GamsionLogger;
 import com.gamsion.chris.utility.log.Log;
@@ -24,13 +25,13 @@ import com.gamsion.chris.utility.sql.SQLTools;
  * 
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
  */
-public class EmotionModule implements GamsionModule, Cloneable {
+public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	private String idName;
 	private LogFile logFile = new LogFile(getName(), null);
 	// Global Random generator object.
 	public final Random r = new Random();
 	// Here are all the emotions to be used
-	Emotion admiration, amazement, grief, happiness, loathing, rage, terror, vigilance;
+	public Emotion admiration, amazement, grief, happiness, loathing, rage, terror, vigilance;
 	// String of the save file's path
 	private String save_location;
 	private SQLTools save;
@@ -56,6 +57,9 @@ public class EmotionModule implements GamsionModule, Cloneable {
 	 * values.
 	 */
 	public void initializeEM() {
+//		for(EmotionType et : EmotionType.values()){
+//			
+//		}
 		this.admiration = new Emotion(EmotionType.admiration);
 		this.amazement = new Emotion(EmotionType.amazement);
 		this.grief = new Emotion(EmotionType.grief);
@@ -109,6 +113,7 @@ public class EmotionModule implements GamsionModule, Cloneable {
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()), getName(), "EmotionModule is initializing.",
 				GamsionLogger.DEBUG));
 		this.setSave_location(save_location);
+		this.initializeEM();
 		logFile.log(this, "EmotionModule has been initialized", GamsionLogger.DEBUG);
 
 	}
@@ -358,6 +363,16 @@ public class EmotionModule implements GamsionModule, Cloneable {
 		temp.addAll(em.logFile);
 		em.logFile = temp;
 		return em;
+	}
+
+	@Override
+	public String getUniqueID() {
+		return this.idName;
+	}
+
+	@Override
+	public void setUniqueID(String idName) {
+		this.idName = idName;
 	}
 
 }
