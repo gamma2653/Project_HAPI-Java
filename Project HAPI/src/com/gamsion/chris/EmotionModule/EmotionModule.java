@@ -24,6 +24,7 @@ import com.gamsion.chris.utility.sql.SQLTools;
  * made to be as dynamic as possible
  * 
  * @author <b>gamma2626</b> a.k.a. Christopher De Jesus
+ * @author <b>Gamsion Developers</b>
  */
 public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	private String idName;
@@ -31,7 +32,7 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	// Global Random generator object.
 	public final Random r = new Random();
 	// Here are all the emotions to be used
-	public Emotion admiration, amazement, grief, happiness, loathing, rage, terror, vigilance;
+	public Emotion admiration, ecstasy, rage, vigilance;
 	// String of the save file's path
 	private String save_location;
 	private SQLTools save;
@@ -61,12 +62,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 //			
 //		}
 		this.admiration = new Emotion(EmotionType.admiration);
-		this.amazement = new Emotion(EmotionType.amazement);
-		this.grief = new Emotion(EmotionType.grief);
-		this.happiness = new Emotion(EmotionType.happiness);
-		this.loathing = new Emotion(EmotionType.loathing);
+		this.ecstasy = new Emotion(EmotionType.ecstasy);
 		this.rage = new Emotion(EmotionType.rage);
-		this.terror = new Emotion(EmotionType.terror);
 		this.vigilance = new Emotion(EmotionType.vigilance);
 	}
 
@@ -135,12 +132,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	 */
 	public void setEmotionMap(Map<EmotionType, Emotion> emotions) {
 		admiration = emotions.get(admiration.getType());
-		amazement = emotions.get(amazement.getType());
-		grief = emotions.get(grief.getType());
-		happiness = emotions.get(happiness.getType());
-		loathing = emotions.get(loathing.getType());
+		ecstasy = emotions.get(ecstasy.getType());
 		rage = emotions.get(rage.getType());
-		terror = emotions.get(terror.getType());
 		vigilance = emotions.get(vigilance.getType());
 	}
 
@@ -152,12 +145,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	public Map<EmotionType, Emotion> getEmotionMap() {
 		Map<EmotionType, Emotion> emotions = new HashMap<EmotionType, Emotion>();
 		emotions.put(admiration.getType(), admiration);
-		emotions.put(amazement.getType(), amazement);
-		emotions.put(grief.getType(), grief);
-		emotions.put(happiness.getType(), happiness);
-		emotions.put(loathing.getType(), loathing);
+		emotions.put(ecstasy.getType(), ecstasy);
 		emotions.put(rage.getType(), rage);
-		emotions.put(terror.getType(), terror);
 		emotions.put(vigilance.getType(), vigilance);
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()), getName(), "Emotions map was gotten.",
 				GamsionLogger.DEBUG));
@@ -173,12 +162,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 	public List<Emotion> getEmotionList() {
 		List<Emotion> emotions = new ArrayList<Emotion>();
 		emotions.add(admiration);
-		emotions.add(amazement);
-		emotions.add(grief);
-		emotions.add(happiness);
-		emotions.add(loathing);
+		emotions.add(ecstasy);
 		emotions.add(rage);
-		emotions.add(terror);
 		emotions.add(vigilance);
 		logFile.add(new Log(LogFile.getLogDateFormat().format(new Date()), getName(), "Emotions list was gotten.",
 				GamsionLogger.DEBUG));
@@ -195,18 +180,10 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 		Emotion emotion;
 		if (emotionID == EmotionType.admiration) {
 			emotion = admiration;
-		} else if (emotionID == EmotionType.amazement) {
-			emotion = amazement;
-		} else if (emotionID == EmotionType.grief) {
-			emotion = grief;
-		} else if (emotionID == EmotionType.happiness) {
-			emotion = happiness;
-		} else if (emotionID == EmotionType.loathing) {
-			emotion = loathing;
+		} else if (emotionID == EmotionType.ecstasy) {
+			emotion = ecstasy;
 		} else if (emotionID == EmotionType.rage) {
 			emotion = rage;
-		} else if (emotionID == EmotionType.terror) {
-			emotion = terror;
 		} else if (emotionID == EmotionType.vigilance) {
 			emotion = vigilance;
 		} else {
@@ -270,12 +247,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 					GamsionLogger.DEBUG));
 
 			incrementEmotion(EmotionType.admiration, (r.nextInt(factor + 1) - factor / 2));
-			incrementEmotion(EmotionType.amazement, (r.nextInt(factor + 1) - factor / 2));
-			incrementEmotion(EmotionType.grief, (r.nextInt(factor + 1) - factor / 2));
-			incrementEmotion(EmotionType.happiness, (r.nextInt(factor + 1) - factor / 2));
-			incrementEmotion(EmotionType.loathing, (r.nextInt(factor + 1) - factor / 2));
+			incrementEmotion(EmotionType.ecstasy, (r.nextInt(factor + 1) - factor / 2));
 			incrementEmotion(EmotionType.rage, (r.nextInt(factor + 1) - factor / 2));
-			incrementEmotion(EmotionType.terror, (r.nextInt(factor + 1) - factor / 2));
 			incrementEmotion(EmotionType.vigilance, (r.nextInt(factor + 1) - factor / 2));
 
 		} else {
@@ -351,12 +324,8 @@ public class EmotionModule implements GamsionModule, UniqueModule, Cloneable {
 		}
 		em.setSave_location(save_location);
 		em.admiration = this.admiration.clone();
-		em.amazement = this.amazement.clone();
-		em.grief = this.grief.clone();
-		em.happiness = this.happiness.clone();
-		em.loathing = this.loathing.clone();
+		em.ecstasy = this.ecstasy.clone();
 		em.rage = this.rage.clone();
-		em.terror = this.terror.clone();
 		em.vigilance = this.vigilance.clone();
 
 		LogFile temp = this.logFile.clone();

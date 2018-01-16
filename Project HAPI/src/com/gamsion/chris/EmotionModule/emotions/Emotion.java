@@ -13,15 +13,15 @@ package com.gamsion.chris.EmotionModule.emotions;
  * </p>
  * 
  * @author gamma2626 a.k.a. Christopher De Jesus
- *
+ * @author <b>Gamsion Developers</b>
  */
 public class Emotion implements Cloneable {
 	/**
-	 * It is based on a 1000000 value cap with a minimum of 0. For example if
-	 * Happy is at 1000000 that person is as happy as he can physically possibly
-	 * be.
+	 * It is based on a 1000000 value cap with a minimum of 0. For example if Happy
+	 * is at 1000000 that person is as happy as he can physically possibly be.
 	 */
 	private double value;
+	private double deltaValue;
 	private final double maxValue;
 	private final double minValue;
 	private final double balancedValue;
@@ -34,7 +34,7 @@ public class Emotion implements Cloneable {
 	 * Constructor for creating an emotion.
 	 * 
 	 * @param emotionID
-	 *            - Necessary to identify emotion.
+	 *            - Necessary to identify emotion
 	 */
 	public Emotion(EmotionType emotionID) {
 		this.emotionID = emotionID;
@@ -45,6 +45,10 @@ public class Emotion implements Cloneable {
 
 	}
 
+	/**
+	 * @return the type of emotion
+	 * @see EmotionType
+	 */
 	public EmotionType getType() {
 		return emotionID;
 	}
@@ -53,7 +57,7 @@ public class Emotion implements Cloneable {
 	 * Checks the value. If it is above 1000000, ground it to 1000000. If it is
 	 * below 0, raise it to 0.
 	 * 
-	 * @return - By how much was the original value off from the boundries.
+	 * @return - By how much was the original value off from the boundaries
 	 */
 	public double checkValue() {
 		if (value > maxValue) {
@@ -69,28 +73,30 @@ public class Emotion implements Cloneable {
 	}
 
 	/**
-	 * Adds the parameter to the value (then checks the value) then returns the
-	 * new value incase you wanted it. (Got that idea from lua)
+	 * Adds the parameter to the value (then checks the value) then returns the new
+	 * value incase you wanted it. (Got that idea from lua)
 	 * 
 	 * @param numb
-	 *            - How much to add.
-	 * @return - the new value.
+	 *            - How much to add
+	 * @return - the new value
 	 */
 	public double incrementValue(double numb) {
+		double initialVal = value;
 		value += numb;
 		checkValue();
+		deltaValue = value - initialVal;
 		return value;
 	}
 
 	/**
-	 * @return - The current stored value.
+	 * @return - The current stored value
 	 */
 	public double getValue() {
 		return value;
 	}
 
 	/**
-	 * @return - The current inverse of the value.
+	 * @return - The current inverse of the value
 	 */
 	public double getNValue() {
 		return maxValue - value;
@@ -98,20 +104,24 @@ public class Emotion implements Cloneable {
 
 	/**
 	 * @param numb
-	 *            - What value to set value to.
+	 *            - What value to set value to
 	 */
 	public void setValue(double numb) {
+		double initialVal = value;
 		value = numb;
 		checkValue();
+		deltaValue = value - initialVal;
 	}
 
 	/**
 	 * @param numb
-	 *            - Sets the NValue to the requested value.
+	 *            - Sets the NValue to the requested value
 	 */
 	public void setNValue(double numb) {
+		double initialVal = value;
 		value = maxValue - numb;
 		checkValue();
+		deltaValue = value - initialVal;
 	}
 
 	/**
@@ -119,14 +129,24 @@ public class Emotion implements Cloneable {
 	 * 
 	 * @param numb
 	 *            The percentage you want to make.
-	 * @return
+	 * @return the current emotion value
 	 */
 	public double percentValue(double numb) {
+		double initialVal = value;
 		value *= numb;
 		value /= 100;
 		checkValue();
+		deltaValue = value - initialVal;
 		return value;
 	}
+	
+	/**
+	 * @return the amount this emotion has last changed
+	 */
+	public double getDValue() {
+		return deltaValue;
+	}
+	
 
 	@Override
 	public String toString() {
@@ -172,4 +192,6 @@ public class Emotion implements Cloneable {
 			}
 		}
 	}
+	
+	
 }

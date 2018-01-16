@@ -1,10 +1,14 @@
 package com.gamsion.chris.EmotionModule.emotions;
 
+/**
+ * @author Christopher De Jesus a.k.a. gamma2626
+ * @author <b>Gamsion Developers</b>
+ *
+ */
 public enum EmotionType {
 
-	admiration(0, 1000000, 50000, 50000), amazement(0, 1000000, 50000, 50000), grief(0, 1000000, 50000,
-			50000), happiness(0, 1000000, 50000, 50000), loathing(0, 1000000, 50000, 50000), rage(0, 1000000, 50000,
-					50000), terror(0, 1000000, 50000, 50000), vigilance(0, 1000000, 50000, 50000);
+	admiration(0, 1000000, 50000, 50000), ecstasy(0, 1000000, 50000, 50000), rage(0, 1000000, 50000,
+			50000), vigilance(0, 1000000, 50000, 50000);
 
 	int minValue, maxValue, startValue, balancedValue;
 

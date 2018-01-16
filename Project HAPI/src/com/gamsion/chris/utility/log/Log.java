@@ -70,12 +70,14 @@ public class Log {
 	}
 
 	/**
-	 * Returns the time log was made.
+	 * <p>Returns the time log was made.</p>
+	 * <p>This is in the standard format "HH.mm.ss"</p>
 	 * 
 	 * @param b
 	 *            - If true, returns raw String variable. If false, returns the
 	 *            time minus the last two characters (for when default time is
 	 *            take and ends with ": ")
+	 *            
 	 * @return - String representation of Time of Log.
 	 */
 	public String getTime(boolean b) {
